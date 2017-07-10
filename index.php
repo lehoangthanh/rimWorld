@@ -5,6 +5,7 @@
  * Date: 08-Jul-17
  * Time: 1:10 PM
  */
+const fileTMP = './assets/file-tmp/file.rws';
 if ( ! session_id() ) @ session_start();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // The request is using the POST method
@@ -23,6 +24,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 preg_match_all('/\<def>(.*?)<\/def>/s', $match, $defMatches);
                 $sDef = $defMatches[1][0];
+                if(preg_match('/^Raw*/',$sDef) === 1){continue;}
+                if(preg_match('/^Meal*/',$sDef) === 1){continue;}
+                if(preg_match('/^MeleeWeapon*/',$sDef) === 1){continue;}
+                if(preg_match('/^WoodLog*/',$sDef) === 1){continue;}
 
                 preg_match_all('/\<stackCount>(.*?)<\/stackCount>/s', $match, $stackCountMatches);
                 $stackCount = $stackCountMatches[1][0];
@@ -31,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             }
             $_SESSION['data-read-new-file'] = $contents;
+
             $_SESSION['data-resource'] = $arrResource;
             break;
         }
@@ -48,11 +54,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $value = intval($_POST[$key]);
                 $match = $resource['match'];
                 $newMatch = preg_replace('/\<stackCount>(.*?)<\/stackCount>/s',"<stackCount>$value</stackCount>",$match);
-                var_dump($match);echo'<br/><br/>';
-                var_dump($newMatch);die;
+                $fileContent = str_replace($match,$newMatch,$fileContent);
 
             }
-            var_dump($formFileName);
+
+            file_put_contents(fileTMP,$fileContent);
+
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename="'.$formFileName.'"');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize(fileTMP));
+            readfile(fileTMP);
+
+            file_put_contents('../assets/file-tmp/file.rws','');
             break;
         }
 
