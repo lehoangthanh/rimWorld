@@ -6,6 +6,10 @@
  * Time: 1:10 PM
  */
 const fileTMP = './assets/file-tmp/file.rws';
+if(!file_exists(fileTMP)){
+    $myfile = fopen(fileTMP, "w");
+    fclose($myfile);
+}
 if ( ! session_id() ) @ session_start();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // The request is using the POST method
@@ -25,9 +29,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 preg_match_all('/\<def>(.*?)<\/def>/s', $match, $defMatches);
                 $sDef = $defMatches[1][0];
                 if(preg_match('/^Raw*/',$sDef) === 1){continue;}
-                if(preg_match('/^Meal*/',$sDef) === 1){continue;}
+//                if(preg_match('/^Meal*/',$sDef) === 1){continue;}
                 if(preg_match('/^MeleeWeapon*/',$sDef) === 1){continue;}
                 if(preg_match('/^WoodLog*/',$sDef) === 1){continue;}
+                if(preg_match('/^Bow*/',$sDef) === 1){continue;}
 
                 preg_match_all('/\<stackCount>(.*?)<\/stackCount>/s', $match, $stackCountMatches);
                 $stackCount = $stackCountMatches[1][0];
@@ -41,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
         }
         case 'save-new-file': {
-
+            set_time_limit(-1);
             $formFileName = $_SESSION['form-file-name'];
 
             $arrResource = isset($_SESSION['data-resource']) ? $_SESSION['data-resource'] : array();
@@ -68,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Pragma: public');
             header('Content-Length: ' . filesize(fileTMP));
             readfile(fileTMP);
-
+            unlink(fileTMP);
             file_put_contents('../assets/file-tmp/file.rws','');
             break;
         }
