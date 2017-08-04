@@ -74,7 +74,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Content-Length: ' . filesize(fileTMP));
             readfile(fileTMP);
             unlink(fileTMP);
-            file_put_contents('../assets/file-tmp/file.rws','');
             break;
         }
 

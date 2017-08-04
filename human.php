@@ -6,6 +6,10 @@
  * Time: 1:10 PM
  */
 const fileTMP = './assets/file-tmp/file.rws';
+if(!file_exists(fileTMP)){
+    $myfile = fopen(fileTMP, "w");
+    fclose($myfile);
+}
 if ( ! session_id() ) @ session_start();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // The request is using the POST method
@@ -75,6 +79,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
         }
         case 'up-skills':{
+            set_time_limit(-1);
+
             $arrSkilLimit = array('Medicine','Cooking','Artistic','Crafting');
             $formFileName = $_SESSION['form-file-name'];
 
@@ -89,7 +95,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     $killMatch = $skill['match'];
                     $iLevel = in_array($skill['def'],$arrSkilLimit) ? 20 : 99999;
-                    $newMatch = preg_replace('/\<level>(.*?)<\/level>/s',"<level>$iLevel</level>\n\t\t\t\t\t\t\t\t\t<passion>Major</passion>",$killMatch);
+                    preg_match('/\<level>(.*?)<\/level>/s',$killMatch,$arrLevelMatch);
+                   if(count($arrLevelMatch) > 0) {
+                       $newMatch = preg_replace('/\<level>(.*?)<\/level>/s', "<level>$iLevel</level>", $killMatch);
+                   }else{
+                       $newMatch = str_replace('</def>', "</def>\n\t\t\t\t\t\t\t\t\t<level>$iLevel</level>", $killMatch);
+                   }
                     $humanNewMatch = str_replace($killMatch,$newMatch,$humanNewMatch);
                 }
                 $fileContent = str_replace($humanMatch,$humanNewMatch,$fileContent);
@@ -106,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Content-Length: ' . filesize(fileTMP));
             readfile(fileTMP);
 
-            file_put_contents('../assets/file-tmp/file.rws','');
+            unlink(fileTMP);
             break;
 
 
