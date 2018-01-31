@@ -172,10 +172,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
 
+
+
 </head>
 <body>
+
+<?php include_once 'menu.php'?>
+
 <div class="container">
-    <form enctype="multipart/form-data" method="post">
+    <div class="jumbotron">
+        <form enctype="multipart/form-data" method="post">
         <div class="panel panel-primary">
             <div class="panel-heading">
                 <div class="panel-title">Rim World Cheat Save File</div>
@@ -194,67 +200,68 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </form>
 
-    <?php
-    if($arrHuman){
-
-        ?>
-        <form id="f-save-new-file-human" method="post">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <div class="panel-title">
-                        <label>Humans</label>
-                        <a href="javascript:void(0);" class="btn btn-primary" data-action="update-human" data-mode="up-skills">Up Skills</a>
-<!--                        <button class="btn btn-primary">Save File</button>-->
-                    </div>
-                </div>
-                <div class="panel-body">
-                    <div style="float: right;padding-bottom: 10px;">
-<!--                        Up all to-->
-<!--                        <input type="text" value="500" id="all-value-to"/>-->
-<!--                        <a href="javascript:void(0);" class="btn btn-primary" id="btn-up-value-to">Up</a>-->
-
-                    </div>
-                    <table class="table table-bordered table-responsive table-hover" id="table-resource">
-                        <thead>
-                        <th>ID</th>
-                        <th>name</th>
-                        <th>kindDef</th>
-                        <th>Skills</th>
-                        </thead>
-                        <tbody>
-                        <?php foreach($arrHuman as $Human){?>
-                            <tr>
-                                <td><?php echo $Human['id'] ?></td>
-                                <td><?php echo $Human['name'] ?></td>
-                                <td><?php echo $Human['kindDef'] ?></td>
-                               <td>
-                                   <table class="table table-bordered table-responsive table-hover" id="table-resource">
-                                       <tbody>
-                                       <?php foreach($Human['skills'] as $skill){?>
-                                           <tr>
-                                               <td><?php echo $skill['def'] ?></td>
-                                               <td><input name="<?php echo $skill['def'] ?>" value="<?php echo $skill['level'] ?>"/></td>
-                                           </tr>
-                                       <?php }?>
-                                       </tbody>
-                                   </table>
-                               </td>
-
-                            </tr>
-                        <?php }?>
-                        </tbody>
-                    </table>
-
-                </div>
-                <div class="panel-footer">
-<!--                    <button class="btn btn-primary">Save File</button>-->
-                    <input type="hidden" name="mode" id="mode"/>
-                </div>
-            </div>
-        </form>
         <?php
-    } //end if($arrResource)
-    ?>
+        if($arrHuman){
+
+            ?>
+            <form id="f-save-new-file-human" method="post">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <div class="panel-title">
+                            <label>Humans</label>
+                            <a href="javascript:void(0);" class="btn btn-primary" data-action="update-human" data-mode="up-skills">Up Skills</a>
+    <!--                        <button class="btn btn-primary">Save File</button>-->
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div style="float: right;padding-bottom: 10px;">
+    <!--                        Up all to-->
+    <!--                        <input type="text" value="500" id="all-value-to"/>-->
+    <!--                        <a href="javascript:void(0);" class="btn btn-primary" id="btn-up-value-to">Up</a>-->
+
+                        </div>
+                        <table class="table table-bordered table-responsive table-hover" id="table-resource">
+                            <thead>
+                            <th>ID</th>
+                            <th>name</th>
+                            <th>kindDef</th>
+                            <th>Skills</th>
+                            </thead>
+                            <tbody>
+                            <?php foreach($arrHuman as $Human){?>
+                                <tr>
+                                    <td><?php echo $Human['id'] ?></td>
+                                    <td><?php echo $Human['name'] ?></td>
+                                    <td><?php echo $Human['kindDef'] ?></td>
+                                   <td>
+                                       <table class="table table-bordered table-responsive table-hover" id="table-resource">
+                                           <tbody>
+                                           <?php foreach($Human['skills'] as $skill){?>
+                                               <tr>
+                                                   <td><?php echo $skill['def'] ?></td>
+                                                   <td><input name="<?php echo $skill['def'] ?>" value="<?php echo $skill['level'] ?>"/></td>
+                                               </tr>
+                                           <?php }?>
+                                           </tbody>
+                                       </table>
+                                   </td>
+
+                                </tr>
+                            <?php }?>
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <div class="panel-footer">
+    <!--                    <button class="btn btn-primary">Save File</button>-->
+                        <input type="hidden" name="mode" id="mode"/>
+                    </div>
+                </div>
+            </form>
+            <?php
+        } //end if($arrResource)
+        ?>
+    </div>
 </div>
 
 <script src="./assets/jquery/js/jquery-3.2.1.min.js"></script>

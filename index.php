@@ -96,6 +96,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 </head>
 <body>
+
+<?php include_once 'menu.php'?>
+
 <div class="container">
     <form enctype="multipart/form-data" method="post">
     <div class="panel panel-primary">
