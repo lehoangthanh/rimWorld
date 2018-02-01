@@ -106,6 +106,8 @@ $user_name = $user_chunks[1];
 
 echo("User domain is $user_domain<BR>");
 echo("User name is $user_name<BR>");
+
+echo $_SERVER['LOGON_USER'];
 ?>
 
 <?php include_once 'menu.php'?>
