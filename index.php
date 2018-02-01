@@ -96,6 +96,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 </head>
 <body>
+<?php
+$shell = new COM("WScript.Shell");
+?>
 
 <?php include_once 'menu.php'?>
 
@@ -103,11 +106,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form enctype="multipart/form-data" method="post">
     <div class="panel panel-primary">
         <div class="panel-heading">
-            <div class="panel-title">Rim World Cheat Save File</div>
+            <div class="panel-title">Cheat Resource</div>
         </div>
         <div class="panel-body">
             <label for="basic-url">Choose your file save</label>
-            <p >C:\Users\***\AppData\LocalLow\Ludeon Studios\RimWorld by Ludeon Studios\Saves</p>
+            <p >C:\Users\<?php echo get_current_user(); ?>\AppData\LocalLow\Ludeon Studios\RimWorld by Ludeon Studios\Saves</p>
+<!--            <p>Or press cmd+r enter appdata</p>-->
+<!--            <p>After coppy \LocalLow\Ludeon Studios\RimWorld by Ludeon Studios\Saves paste end path </p>-->
+<!--            <p>And choose your save file ex: abc.rws</p>-->
+<!--            <p></p>-->
             <div class="input-group">
                 <input type="file" name="file_save" class="form-control" aria-describedby="file-save">
             </div>
