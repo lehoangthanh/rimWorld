@@ -160,31 +160,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Rimworld</title>
-    <meta charset="UTF-8">
-
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="./assets/bootstrap-3.3.7-dist/css/bootstrap.min.css">
-
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="./assets/bootstrap-3.3.7-dist/css/bootstrap-theme.min.css">
-
-
-
-
-
-</head>
+<?php include_once 'header-file-input.php'?>
 <body>
 
 <?php include_once 'menu.php'?>
 
 <div class="container">
-    <div class="jumbotron">
+
         <form enctype="multipart/form-data" method="post">
         <div class="panel panel-primary">
             <div class="panel-heading">
-                <div class="panel-title">Rim World Cheat Save File</div>
+                <div class="panel-title">Cheat People Skills</div>
             </div>
             <div class="panel-body">
                 <label for="basic-url">Choose your file save</label>
@@ -261,7 +247,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php
         } //end if($arrResource)
         ?>
-    </div>
+
 </div>
 
 <script src="./assets/jquery/js/jquery-3.2.1.min.js"></script>

@@ -82,36 +82,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Rimworld</title>
-    <meta charset="UTF-8">
 
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="./assets/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+<?php include_once 'header-file-input.php'?>
 
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="./assets/bootstrap-3.3.7-dist/css/bootstrap-theme.min.css">
-
-
-
-</head>
 <body>
-<?php
-$ip = getenv("REMOTE_ADDR");
-echo("IP address is $ip<BR>");
-
-$user_chunks = explode("\\",strtoupper(getenv("REMOTE_USER")));
-$user_domain = $user_chunks[0];
-$user_name = $user_chunks[1];
-
-echo("User domain is $user_domain<BR>");
-echo("User name is $user_name<BR>");
-
-echo $_SERVER['LOGON_USER'];
-?>
 
 <?php include_once 'menu.php'?>
-
 <div class="container">
     <form enctype="multipart/form-data" method="post">
     <div class="panel panel-primary">
@@ -120,10 +96,11 @@ echo $_SERVER['LOGON_USER'];
         </div>
         <div class="panel-body">
             <label for="basic-url">Choose your file save</label>
-            <p >C:\Users\<?php echo get_current_user(); ?>\AppData\LocalLow\Ludeon Studios\RimWorld by Ludeon Studios\Saves</p>
+            <p >Choose path C:\Users\...\</p>
 <!--            <p>Or press cmd+r enter appdata</p>-->
-<!--            <p>After coppy \LocalLow\Ludeon Studios\RimWorld by Ludeon Studios\Saves paste end path </p>-->
-<!--            <p>And choose your save file ex: abc.rws</p>-->
+            <p>After coppy \LocalLow\Ludeon Studios\RimWorld by Ludeon Studios\Saves<span  data-toggle="tooltip" data-placement="top" title="Tooltip on top"><i class="far fa-copy"></i></span> paste end path </p>
+
+            <p>And choose your save file ex: abc.rws</p>
 <!--            <p></p>-->
             <div class="input-group">
                 <input type="file" name="file_save" class="form-control" aria-describedby="file-save">
@@ -183,9 +160,7 @@ echo $_SERVER['LOGON_USER'];
     ?>
 </div>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<!-- Latest compiled and minified JavaScript -->
-<script src="./assets/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+
 
 <script>
     $(function(){
