@@ -6,6 +6,11 @@
  * Time: 1:10 PM
  */
 const fileTMP = './assets/file-tmp/file.rws';
+
+if(!file_exists('./assets/file-tmp')){
+    mkdir('./assets/file-tmp');
+}
+
 if(!file_exists(fileTMP)){
     $myfile = fopen(fileTMP, "w");
     fclose($myfile);

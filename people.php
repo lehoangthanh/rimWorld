@@ -6,6 +6,12 @@
  * Time: 1:10 PM
  */
 const fileTMP = './assets/file-tmp/file.rws';
+
+if(!file_exists('./assets/file-tmp')){
+    mkdir('./assets/file-tmp');
+}
+
+
 if(!file_exists(fileTMP)){
     $myfile = fopen(fileTMP, "w");
     fclose($myfile);
@@ -151,7 +157,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Content-Length: ' . filesize(fileTMP));
             readfile(fileTMP);
 
-            file_put_contents('../assets/file-tmp/file.rws','');
+            unlink(fileTMP);
+//            file_put_contents('../assets/file-tmp/file.rws','');
             break;
         }
 
