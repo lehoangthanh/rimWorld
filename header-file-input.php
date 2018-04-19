@@ -7,7 +7,7 @@
  */
 ?>
 <head>
-    <title>Rimworld</title>
+    <title>Rimworld Ver 0.16</title>
     <meta charset="UTF-8">
 <style>
     .fa-copy:hover{
@@ -18,6 +18,7 @@
 
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="./assets/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="./assets/css/style.css">
 
 <!-- Optional theme -->
 <link rel="stylesheet" href="./assets/bootstrap-3.3.7-dist/css/bootstrap-theme.min.css">
@@ -28,13 +29,37 @@
 
 <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
 
-    <script type="text/javascript">
-        $(function(){
-            $(document).ready(function(){
-                $('[data-toggle="tooltip"]').click(function(){
-                  $(this).tooltip('show');
-                });
-            });
-        })
-    </script>
+<script type="text/javascript">
+    $(function(){
+        $('[data-toggle="tooltip"]').hover(
+            // hover on
+            function(){
+                $(this).tooltip('show');
+            },
+            // hover off
+            function(){
+                $(this).tooltip('hide');
+            }
+        );
+
+        $('[data-action="copy-path-save"]').click(function(){
+
+            $(this).attr('title','Copied')
+                .tooltip('fixTitle')
+                .tooltip('show');
+
+            $('#path-name-content').css({color:'#2e6da4','font-style': 'italic'});
+
+            var _pathName = $(this).data('value');
+
+            var $temp = $("<input>");
+            $("body").append($temp);
+            $temp.val(_pathName).select();
+            document.execCommand("copy");
+            $temp.remove();
+
+
+        });
+    })
+</script>
 </head>

@@ -1,0 +1,12 @@
+.stockpile-name{
+    width: 50%;
+    text-align: center;
+    color: #ffffff;
+}
+
+.img-resource{
+    width: 32px;
+    height: 32px;
+    border: none;
+    vertical-align: middle;
+}

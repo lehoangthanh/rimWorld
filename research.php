@@ -103,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="panel-body">
                 <label for="basic-url">Choose your file save</label>
-                <p >C:\Users\***\AppData\LocalLow\Ludeon Studios\RimWorld by Ludeon Studios\Saves</p>
+                <?php include_once 'tool-tip-copy-path-name.php'?>
                 <div class="input-group">
                     <input type="file" name="file_save" class="form-control" aria-describedby="file-save">
                 </div>

@@ -24,25 +24,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         case'read-file':{
             $_SESSION['form-file-name'] = $_FILES['file_save']['name'];
             $contents = file_get_contents($_FILES['file_save']['tmp_name']);
-
+            $arDef = array();
             preg_match_all('/\<thing Class="ThingWithComps">(.*?)<\/thing>/s', $contents, $matches);
-            foreach($matches[0] as $key=>$match){
+            foreach($matches[0] as $key=>$match) {
 
                 preg_match_all('/\<id>(.*?)<\/id>/s', $match, $idMatches);
                 $id = $idMatches[1][0];
 
                 preg_match_all('/\<def>(.*?)<\/def>/s', $match, $defMatches);
+                preg_match_all('/\<pos>(.*?)<\/pos>/s', $match, $posMatches);
                 $sDef = $defMatches[1][0];
-                if(preg_match('/^Raw*/',$sDef) === 1){continue;}
+                if (preg_match('/^Raw*/', $sDef) === 1) {
+                    continue;
+                }
 //                if(preg_match('/^Meal*/',$sDef) === 1){continue;}
-                if(preg_match('/^MeleeWeapon*/',$sDef) === 1){continue;}
-                if(preg_match('/^WoodLog*/',$sDef) === 1){continue;}
-                if(preg_match('/^Bow*/',$sDef) === 1){continue;}
+                if (preg_match('/^MeleeWeapon*/', $sDef) === 1) {
+                    continue;
+                }
+                if (preg_match('/^WoodLog*/', $sDef) === 1) {
+                    continue;
+                }
+                if (preg_match('/^Bow*/', $sDef) === 1) {
+                    continue;
+                }
 
                 preg_match_all('/\<stackCount>(.*?)<\/stackCount>/s', $match, $stackCountMatches);
                 $stackCount = $stackCountMatches[1][0];
+                $pos = $posMatches[1][0];
+                $arrData = array('id' => $id, 'def' => $sDef, 'stackCount' => $stackCount, 'match' => $match,'pos'=>$pos);
+                if (in_array($sDef, $arDef)) {
+                    continue;
 
-                $arrResource[$id] = array('id'=>$id, 'def'=>$sDef, 'stackCount'=>$stackCount,'match'=>$match);
+                } else {
+                    $arDef[] = $sDef;
+                    $arrResource[$id] = $arrData;
+                }
+
 
             }
             $_SESSION['data-read-new-file'] = $contents;
@@ -68,16 +85,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             }
 
-            file_put_contents(fileTMP,$fileContent);
-
-            header('Content-Description: File Transfer');
-            header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename="'.$formFileName.'"');
-            header('Expires: 0');
-            header('Cache-Control: must-revalidate');
-            header('Pragma: public');
-            header('Content-Length: ' . filesize(fileTMP));
-            readfile(fileTMP);
+//            file_put_contents(fileTMP,$fileContent);
+//
+//            header('Content-Description: File Transfer');
+//            header('Content-Type: application/octet-stream');
+//            header('Content-Disposition: attachment; filename="'.$formFileName.'"');
+//            header('Expires: 0');
+//            header('Cache-Control: must-revalidate');
+//            header('Pragma: public');
+//            header('Content-Length: ' . filesize(fileTMP));
+//            readfile(fileTMP);
             unlink(fileTMP);
             break;
         }
@@ -91,13 +108,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php include_once 'header-file-input.php'?>
 
 <body>
-
 <?php include_once 'menu.php'?>
 <div class="container">
     <form enctype="multipart/form-data" method="post">
     <div class="panel panel-primary">
         <div class="panel-heading">
-            <div class="panel-title">Cheat Resource</div>
+            <div class="panel-title">Add More Resource</div>
         </div>
         <div class="panel-body">
             <label for="basic-url">Choose your file save</label>
@@ -138,6 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <thead>
                         <th>ID</th>
                         <th>Def</th>
+                        <th>Pos</th>
                         <th>Stack Count</th>
                     </thead>
                     <tbody>
@@ -145,6 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <tr>
                             <td><?php echo $resource['id'] ?></td>
                             <td><?php echo $resource['def'] ?></td>
+                            <td><?php echo $resource['pos'] ?></td>
                             <td><input name="<?php echo $resource['id'] ?>" value="<?php echo $resource['stackCount'] ?>"/></td>
                         </tr>
                     <?php }?>
