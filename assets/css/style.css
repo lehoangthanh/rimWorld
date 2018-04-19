@@ -10,3 +10,16 @@
     border: none;
     vertical-align: middle;
 }
+
+.thing-comps-item{
+    display: inline-table;
+}
+
+.stockpile-add-more{
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.stockpile-add-more:hover{
+   color: #2e6da4;
+}

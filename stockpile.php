@@ -12,7 +12,6 @@ if(!file_exists('./assets/file-tmp')){
     mkdir('./assets/file-tmp');
 }
 
-
 if(!file_exists(fileTMP)){
     $myfile = fopen(fileTMP, "w");
     fclose($myfile);
@@ -85,47 +84,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 //            <thing Class="Medicine">
 
             $_SESSION['data-read-new-file'] = $contents;
-            $_SESSION['data-resource'] = $researchValueMatches[1];
+            $_SESSION['data-resource'] = $contents;
+            $_SESSION['data-thing-comps'] = $arrThingComps;
             break;
         }
-        case 'add-more': {
+        case 'add-more-resource': {
+            $data = $_POST['data'];
+            list($width,$height,$def,$id) = explode(',',$data);
+            $arrResource = ($_SESSION['data-read-new-file']) ? $_SESSION['data-read-new-file'] : array();
+            $arrThingComps = ($_SESSION['data-thing-comps']) ? $_SESSION['data-thing-comps'] : array();
 
-//            $formFileName = $_SESSION['form-file-name'];
-//
-//            $arrResource = isset($_SESSION['data-resource']) ? $_SESSION['data-resource'] : array();
-//            $fileContent = isset($_SESSION['data-read-new-file']) ? $_SESSION['data-read-new-file'] : '';
-//
-//            preg_match_all('/\<researchManager>(.*?)<\/researchManager>/s', $fileContent, $matches);
-//            preg_match_all('/\<progress>(.*?)<\/progress>/s', $matches[1][0], $processMatches);
-//            preg_match_all('/\<keys>(.*?)<\/keys>/s', $processMatches[1][0], $keyMatches);
-//            preg_match_all('/\<values>(.*?)<\/values>/s', $processMatches[1][0], $valueMatches);
-//
-//
-//            foreach($_POST['research-value'] as $key=>$resource){
-//                $value .= "<li>$resource</li>";
-//                $value .= (($key+1) < count($_POST['research-value'])) ? "\r\n\t\t\t\t\t" : "";
-//
-//            }
-//            $reValue = "<values>\r\n\t\t\t\t\t$value\r\n\t\t\t\t</values>";
-//            $fileContent = str_replace($valueMatches[0],$reValue,$fileContent);
-//
-//            file_put_contents(fileTMP,$fileContent);
-//
-//            header('Content-Description: File Transfer');
-//            header('Content-Type: application/octet-stream');
-//            header('Content-Disposition: attachment; filename="'.$formFileName.'"');
-//            header('Expires: 0');
-//            header('Cache-Control: must-revalidate');
-//            header('Pragma: public');
-//            header('Content-Length: ' . filesize(fileTMP));
-//            readfile(fileTMP);
+            $thingComps = $arrThingComps[$width][$height][$def];
+            $xml = $thingComps['xml'];
+            preg_match_all('/\<stackCount>(.*?)<\/stackCount>/s', $xml, $stackCountMatches);
+            $stachCount = $stackCountMatches[1][0];
+            $xml = str_replace("<stackCount>$stachCount</stackCount>",'<stackCount>500</stackCount>',$xml);
 
-            unlink(fileTMP);
-            break;
+            $idInt = intval(str_replace($def,'',$id));
+            $tmpXml = '';
+            $max = $idInt+10;
+            for($idInt; $idInt <= $max; $idInt++){
+                $newId = $def.$idInt;
+                $tmpXml .= str_replace("<id>$id</id>","<id>$newId</id>",$xml);
+            }
+            $newContents = str_replace($xml,$tmpXml,$_SESSION['data-resource']);
+            $_SESSION['content-tmp'] = $newContents;
+            $_SESSION['content-tmp-id'] = md5($id);
+            header('Content-Type: application/json');
+            echo json_encode(array('id' => $_SESSION['content-tmp-id']));
+            die;
+
         }
 
     }
 }
+
+if($_GET['id'] == $_SESSION['content-tmp-id'] && $_SESSION['content-tmp-id']){
+    unset($_SESSION['content-tmp-id']);
+    $fileContent = $_SESSION['content-tmp'];
+    $formFileName = $_SESSION['form-file-name'];
+    file_put_contents(fileTMP,$fileContent);
+
+    header('Content-Description: File Transfer');
+    header('Content-Type: application/octet-stream');
+    header('Content-Disposition: attachment; filename="'.$formFileName.'"');
+    header('Expires: 0');
+    header('Cache-Control: must-revalidate');
+    header('Pragma: public');
+    header('Content-Length: ' . filesize(fileTMP));
+    readfile(fileTMP);
+
+    unlink(fileTMP);
+}
+
 class stockpile{
     public static function getWHbyPos($pos, &$width, &$height){
         $pos = str_replace('(','',$pos);
@@ -197,12 +208,16 @@ class stockpile{
                                         <?php if(array_key_exists($height,$arrThingComps[$width])) { ?>
 
                                             <?php foreach($arrThingComps[$width][$height] as $thingComps){?>
-                                                <div>
+                                                <div class="thing-comps-item">
                                                     <img class="img-resource"
                                                          alt="<?php echo $thingComps['def'] ?>"
                                                          title="<?php echo $thingComps['id'] ?>"
                                                          src="./assets/images/32px-<?php echo strtoupper($thingComps['def']).'.png' ?>"/>
                                                     <span class="badge"><?php echo $thingComps['stack-count'] ?></span>
+                                                    <span class="stockpile-add-more"
+                                                        data-value='<?php echo "$width,$height,".$thingComps['def'].','.$thingComps['id'] ?>'>
+                                                        <i class="fas fa-plus-square"></i>
+                                                    </span>
                                                 </div>
 
                                             <?php }?>
@@ -239,6 +254,13 @@ class stockpile{
             var val = $('#all-value-to').val();
             $('#table-resource tbody input').val(val);
         })
+
+        $('tbody').on('click','.stockpile-add-more',function(){
+            var _data = $(this).data('value');
+            $.post('/stockpile.php',{data:_data, mode:"add-more-resource"},function(response){
+                window.location.href = '/stockpile.php?id='+response['id'];
+            });
+        });
     })
 </script>
 
