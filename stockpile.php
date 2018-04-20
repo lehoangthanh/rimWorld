@@ -95,19 +95,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $arrThingComps = ($_SESSION['data-thing-comps']) ? $_SESSION['data-thing-comps'] : array();
 
             $thingComps = $arrThingComps[$width][$height][$def];
-            $xml = $thingComps['xml'];
+            $oldXml = $thingComps['xml'];
             preg_match_all('/\<stackCount>(.*?)<\/stackCount>/s', $xml, $stackCountMatches);
             $stachCount = $stackCountMatches[1][0];
-            $xml = str_replace("<stackCount>$stachCount</stackCount>",'<stackCount>500</stackCount>',$xml);
+            $xml = str_replace("<stackCount>$stachCount</stackCount>",'<stackCount>500</stackCount>',$oldXml);
 
             $idInt = intval(str_replace($def,'',$id));
             $tmpXml = '';
-            $max = $idInt+10;
+            $max = $idInt+30;
             for($idInt; $idInt <= $max; $idInt++){
                 $newId = $def.$idInt;
                 $tmpXml .= str_replace("<id>$id</id>","<id>$newId</id>",$xml);
             }
-            $newContents = str_replace($xml,$tmpXml,$_SESSION['data-resource']);
+            $newContents = str_replace($oldXml,$tmpXml,$_SESSION['data-resource']);
             $_SESSION['content-tmp'] = $newContents;
             $_SESSION['content-tmp-id'] = md5($id);
             header('Content-Type: application/json');
