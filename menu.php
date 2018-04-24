@@ -50,9 +50,6 @@ $uri = $_SERVER['REQUEST_URI'];
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li <?php echo ($uri == '/' || $uri == '/stockpile.php') ? 'class="active"' : '' ?> ><a href="/stockpile.php">Resource</a></li>
-
-                <li <?php echo ($uri == '/more-resource.php') ? 'class="active"' : '' ?>><a href="/more-resource.php">More Resource</a></li>
-
                 <li <?php echo ($uri == '/people.php') ? 'class="active"' : '' ?>><a href="/people.php">People</a></li>
                 <li <?php echo ($uri == '/research.php') ? 'class="active"' : '' ?>><a href="/research.php">Research</a></li>
 <!--                <li><a href="#contact">Contact</a></li>-->

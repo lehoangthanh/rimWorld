@@ -69,16 +69,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 stockpile::getWHbyPos($pos,$width, $height);
                 $xml = $thingCompsMatches[0][$key];
+                $fullXml = $xml;
                 if(array_key_exists($sDef,$arrThingComps[$width][$height])){
-
                     $oldStackCount = $arrThingComps[$width][$height][$sDef]['stack-count'];
                     $stackCount+= $oldStackCount;
-                    $arrThingComps[$width][$height][$sDef]= array('id'=>$id,'def'=>$sDef,'pos'=>$pos, 'stack-count'=>$stackCount,'xml'=>$xml);
 
-                }else{
-                    $arrThingComps[$width][$height][$sDef]= array('id'=>$id,'def'=>$sDef,'pos'=>$pos, 'stack-count'=>$stackCount,'xml'=>$xml);
+                    $fullXml = $arrThingComps[$width][$height][$sDef]['full-xml'];
+                    $fullXml .= $xml;
                 }
 
+                $arrThingComps[$width][$height][$sDef]= array('id'=>$id,'def'=>$sDef,'pos'=>$pos, 'stack-count'=>$stackCount,'xml'=>$xml, 'full-xml' => $fullXml);
 
             }
 //            <thing Class="Medicine">
@@ -90,30 +90,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         case 'add-more-resource': {
             $data = $_POST['data'];
-            list($width,$height,$def,$id) = explode(',',$data);
-            $arrResource = ($_SESSION['data-read-new-file']) ? $_SESSION['data-read-new-file'] : array();
-            $arrThingComps = ($_SESSION['data-thing-comps']) ? $_SESSION['data-thing-comps'] : array();
-
-            $thingComps = $arrThingComps[$width][$height][$def];
-            $oldXml = $thingComps['xml'];
-            preg_match_all('/\<stackCount>(.*?)<\/stackCount>/s', $xml, $stackCountMatches);
-            $stachCount = $stackCountMatches[1][0];
-            $xml = str_replace("<stackCount>$stachCount</stackCount>",'<stackCount>500</stackCount>',$oldXml);
-
-            $idInt = intval(str_replace($def,'',$id));
-            $tmpXml = '';
-            $max = $idInt+30;
-            for($idInt; $idInt <= $max; $idInt++){
-                $newId = $def.$idInt;
-                $tmpXml .= str_replace("<id>$id</id>","<id>$newId</id>",$xml);
-            }
-            $newContents = str_replace($oldXml,$tmpXml,$_SESSION['data-resource']);
-            $_SESSION['content-tmp'] = $newContents;
-            $_SESSION['content-tmp-id'] = md5($id);
+            stockpile::addMoreResource($data);
             header('Content-Type: application/json');
             echo json_encode(array('id' => $_SESSION['content-tmp-id']));
             die;
 
+        }
+        case 'reset-resource': {
+            $data = $_POST['data'];
+            stockpile::resetResource($data);
+            header('Content-Type: application/json');
+            echo json_encode(array('id' => $_SESSION['content-tmp-id']));
+            die;
+        }
+        case 'delete-resource': {
+            $data = $_POST['data'];
+            stockpile::resetResource($data, true);
+            header('Content-Type: application/json');
+            echo json_encode(array('id' => $_SESSION['content-tmp-id']));
+            die;
         }
 
     }
@@ -138,12 +133,81 @@ if($_GET['id'] == $_SESSION['content-tmp-id'] && $_SESSION['content-tmp-id']){
 }
 
 class stockpile{
+    /**
+     * @param $pos
+     * @param $width
+     * @param $height
+     * @return void
+     */
     public static function getWHbyPos($pos, &$width, &$height){
         $pos = str_replace('(','',$pos);
         $pos = str_replace(')','',$pos);
         $arrPos = explode(',',$pos);
         $height = intval($arrPos[0]);
         $width = intval($arrPos[2]);
+    }
+
+    /**
+     * @param $data
+     * @return void
+     */
+    public static function addMoreResource($data){
+        $id = $data['id'];
+        $noWant = intval($data['no']);
+        list($width,$height,$def,$id) = explode(',',$id);
+        $content = ($_SESSION['data-read-new-file']) ? $_SESSION['data-read-new-file'] : array();
+        $arrThingComps = ($_SESSION['data-thing-comps']) ? $_SESSION['data-thing-comps'] : array();
+
+        $thingComps = $arrThingComps[$width][$height][$def];
+        $oldXml = $thingComps['xml'];
+        preg_match_all('/\<stackCount>(.*?)<\/stackCount>/s', $oldXml, $stackCountMatches);
+        $stackCount = $stackCountMatches[1][0];
+        $xml = str_replace("<stackCount>$stackCount</stackCount>",'<stackCount>500</stackCount>',$oldXml);
+
+        $idInt = intval(str_replace($def,'',$id));
+        $tmpXml = '';
+        $max = $idInt+$noWant;
+        for($idInt; $idInt <= $max; $idInt++){
+            $newId = $def.$idInt;
+            $tmpXml .= str_replace("<id>$id</id>","<id>$newId</id>",$xml);
+        }
+        $newContents = str_replace($oldXml,$tmpXml,$content, $countReplace);
+        $_SESSION['content-tmp'] = $newContents;
+        $_SESSION['content-tmp-id'] = md5($id);
+    }
+
+    /**
+     * @param $data
+     * @param bool $delResource
+     * @return void
+     */
+    public static function resetResource($data, $delResource = false){
+        $content = $_SESSION['data-resource'];
+        $id = $data['id'];
+        list($width,$height,$def,$id) = explode(',',$id);
+        $arrThingComps = ($_SESSION['data-thing-comps']) ? $_SESSION['data-thing-comps'] : array();
+
+        $thingComps = $arrThingComps[$width][$height][$def];
+        $oldXml = $thingComps['xml'];
+        $fullXml = $thingComps['full-xml'];
+
+
+        preg_match_all('/\<stackCount>(.*?)<\/stackCount>/s', $oldXml, $stackCountMatches);
+        $stackCount = $stackCountMatches[1][0];
+        $oldXml = str_replace("<stackCount>$stackCount</stackCount>",'<stackCount>500</stackCount>',$oldXml);
+
+        preg_match_all('/\<thing Class="ThingWithComps">(.*?)<\/thing>/s', $fullXml, $thingComposMatches);
+        foreach($thingComposMatches[0] as $key=>$thingCompos){
+
+            if($key == (count($thingComposMatches[0]) -1) && !$delResource){
+                $content = str_replace($thingCompos, $oldXml, $content,$countReplace);
+            }else{
+                $content = str_replace($thingCompos, '', $content,$countReplace);
+            }
+
+        }
+        $_SESSION['data-read-new-file'] = $content;
+        stockPile::addMoreResource($data);
     }
 }
 
@@ -209,10 +273,15 @@ class stockpile{
 
                                             <?php foreach($arrThingComps[$width][$height] as $thingComps){?>
                                                 <div class="thing-comps-item">
+                                                    <?php $fileName = "./assets/images/32px-".strtoupper($thingComps['def']).'.png'; ?>
+                                                    <?php if (file_exists($fileName)){ ?>
                                                     <img class="img-resource"
                                                          alt="<?php echo $thingComps['def'] ?>"
                                                          title="<?php echo $thingComps['id'] ?>"
-                                                         src="./assets/images/32px-<?php echo strtoupper($thingComps['def']).'.png' ?>"/>
+                                                         src="<?php echo $fileName ?>"/>
+                                                    <?php } else{ ?>
+                                                        <label><?php echo"32px-".strtoupper($thingComps['def']) ?></label>
+                                                    <?php } ?>
                                                     <span class="badge"><?php echo $thingComps['stack-count'] ?></span>
                                                     <span class="stockpile-add-more"
                                                         data-value='<?php echo "$width,$height,".$thingComps['def'].','.$thingComps['id'] ?>'>
@@ -244,20 +313,88 @@ class stockpile{
 
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="addMoreResourceModal" tabindex="-1" role="dialog" aria-labelledby="addMoreResourceModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addMoreResourceModal">Add More Resource</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <span class="input-group-addon" id="basic-addon1">How many Loop 75 ?</span>
+                    <input type="text" class="form-control"  id="add-more-resource-no" aria-describedby="basic-addon1">
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="add-more-resource-ajax" class="btn btn-primary">Save changes</button>
+                <button type="button" id="reset-resource-ajax" class="btn btn-warning">Reset Resource</button>
+                <button type="button" id="delete-resource-ajax" class="btn btn-danger">Delete Resource</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="./assets/jquery/js/jquery-3.2.1.min.js"></script>
 <!-- Latest compiled and minified JavaScript -->
 <script src="./assets/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 
 <script>
     $(function(){
+        var _idChose = '';
         $('#btn-up-value-to').click(function(e){
             var val = $('#all-value-to').val();
             $('#table-resource tbody input').val(val);
         })
 
         $('tbody').on('click','.stockpile-add-more',function(){
-            var _data = $(this).data('value');
+            _idChose = $(this).data('value');
+            $('#addMoreResourceModal').modal('show');
+
+            // add-more-resource-no
+
+        });
+
+        $('#add-more-resource-ajax').click(function(){
+            $(this).prop('disabled',true);
+            var _moreResourceNo = $('#add-more-resource-no').val();
+            var _data = {id:_idChose,no: _moreResourceNo};
+
             $.post('/stockpile.php',{data:_data, mode:"add-more-resource"},function(response){
+
+                $('#addMoreResourceModal').modal('hide');
+                window.location.href = '/stockpile.php?id='+response['id'];
+            });
+
+        });
+
+        $('#reset-resource-ajax').click(function(){
+            if(!confirm('Are You Sure ????'))return;
+
+            var _moreResourceNo = $('#add-more-resource-no').val();
+            var _data = {id:_idChose,no: _moreResourceNo};
+            $(this).prop('disabled',true);
+            $.post('/stockpile.php',{data:_data, mode:"reset-resource"},function(response){
+                // $(this).attr('disabled',false);
+                $('#addMoreResourceModal').modal('hide');
+                window.location.href = '/stockpile.php?id='+response['id'];
+            });
+        });
+
+        $('#delete-resource-ajax').click(function(){
+            if(!confirm('Are You Sure ????'))return;
+
+            var _moreResourceNo = $('#add-more-resource-no').val();
+            var _data = {id:_idChose,no: _moreResourceNo};
+            $(this).prop('disabled',true);
+            $.post('/stockpile.php',{data:_data, mode:"delete-resource"},function(response){
+                // $(this).attr('disabled',false);
+                $('#addMoreResourceModal').modal('hide');
                 window.location.href = '/stockpile.php?id='+response['id'];
             });
         });
