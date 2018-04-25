@@ -54,6 +54,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
             }
+            ksort($arrStockPile[$key]['data']);
+            foreach($arrStockPile[$key]['data'] as $width=>$stockPile){
+                asort($arrStockPile[$key]['data'][$width]);
+            }
+
+//            asort($arrStockPile[$key]['data']);
             preg_match_all('/\<thing Class="ThingWithComps">(.*?)<\/thing>/s', $contents, $thingCompsMatches);
             foreach($thingCompsMatches[1] as $key=>$thing){
                 preg_match_all('/\<id>(.*?)<\/id>/s', $thing, $idMatches);
@@ -80,6 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $arrThingComps[$width][$height][$sDef]= array('id'=>$id,'def'=>$sDef,'pos'=>$pos, 'stack-count'=>$stackCount,'xml'=>$xml, 'full-xml' => $fullXml);
 
             }
+//            ksort($arrThingComps);
 //            <thing Class="Medicine">
 
             $_SESSION['data-read-new-file'] = $contents;
@@ -90,46 +97,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         case 'add-more-resource': {
             $data = $_POST['data'];
             stockpile::addMoreResource($data);
-            header('Content-Type: application/json');
-            echo json_encode(array('id' => $_SESSION['content-tmp-id']));
+            echo json_encode(array('result'=>'success!!!'));
             die;
 
         }
         case 'reset-resource': {
             $data = $_POST['data'];
             stockpile::resetResource($data);
-            header('Content-Type: application/json');
-            echo json_encode(array('id' => $_SESSION['content-tmp-id']));
+            echo json_encode(array('result'=>'success!!!'));
             die;
         }
         case 'delete-resource': {
             $data = $_POST['data'];
             stockpile::resetResource($data, true);
-            header('Content-Type: application/json');
-            echo json_encode(array('id' => $_SESSION['content-tmp-id']));
+            echo json_encode(array('result'=>'success!!!'));
             die;
+        }
+        case 'download-resource':{
+            $fileContent = $_SESSION['data-resource'];
+            $formFileName = $_SESSION['form-file-name'];
+            file_put_contents(fileTMP,$fileContent);
+
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename="'.$formFileName.'"');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize(fileTMP));
+            readfile(fileTMP);
+
+            unlink(fileTMP);
+            break;
         }
 
     }
 }
 
-if($_GET['id'] == $_SESSION['content-tmp-id'] && $_SESSION['content-tmp-id']){
-    unset($_SESSION['content-tmp-id']);
-    $fileContent = $_SESSION['content-tmp'];
-    $formFileName = $_SESSION['form-file-name'];
-    file_put_contents(fileTMP,$fileContent);
-
-    header('Content-Description: File Transfer');
-    header('Content-Type: application/octet-stream');
-    header('Content-Disposition: attachment; filename="'.$formFileName.'"');
-    header('Expires: 0');
-    header('Cache-Control: must-revalidate');
-    header('Pragma: public');
-    header('Content-Length: ' . filesize(fileTMP));
-    readfile(fileTMP);
-
-    unlink(fileTMP);
-}
 
 class stockpile{
     /**
@@ -154,7 +158,7 @@ class stockpile{
         $id = $data['id'];
         $noWant = intval($data['no']);
         list($width,$height,$def,$id) = explode(',',$id);
-        $content = ($_SESSION['data-read-new-file']) ? $_SESSION['data-read-new-file'] : array();
+        $content = ($_SESSION['data-resource']) ? $_SESSION['data-resource'] : array();
         $arrThingComps = ($_SESSION['data-thing-comps']) ? $_SESSION['data-thing-comps'] : array();
 
         $thingComps = $arrThingComps[$width][$height][$def];
@@ -170,9 +174,8 @@ class stockpile{
             $newId = $def.$idInt;
             $tmpXml .= str_replace("<id>$id</id>","<id>$newId</id>",$xml);
         }
-        $newContents = str_replace($oldXml,$tmpXml,$content, $countReplace);
-        $_SESSION['content-tmp'] = $newContents;
-        $_SESSION['content-tmp-id'] = md5($id);
+        $content = str_replace($oldXml,$tmpXml,$content, $countReplace);
+        $_SESSION['data-resource'] = $content;
     }
 
     /**
@@ -205,7 +208,7 @@ class stockpile{
             }
 
         }
-        $_SESSION['data-read-new-file'] = $content;
+        $_SESSION['data-resource'] = $content;
         stockPile::addMoreResource($data);
     }
 }
@@ -249,7 +252,7 @@ class stockpile{
                     <div class="panel-title">
                         <label>Stockpile List</label>
                         <!--                            <a href="javascript:void(0);" class="btn btn-primary" data-action="update-human" data-mode="up-skills">Up Skills</a>-->
-<!--                        <button class="btn btn-primary">Up Skills</button>-->
+                        <button class="btn btn-primary">Save</button>
                     </div>
                 </div>
                 <div class="panel-body">
@@ -272,6 +275,7 @@ class stockpile{
 
                                             <?php foreach($arrThingComps[$width][$height] as $thingComps){?>
                                                 <div class="thing-comps-item">
+                                                    <?php echo $thingComps['pos'] ?><br/>
                                                     <?php $fileName = "./assets/images/32px-".strtoupper($thingComps['def']).'.png'; ?>
                                                     <?php if (file_exists($fileName)){ ?>
                                                     <img class="img-resource"
@@ -302,7 +306,7 @@ class stockpile{
                 </div>
                 <div class="panel-footer">
                     <!--                    <button class="btn btn-primary">Save File</button>-->
-                    <input type="hidden" name="mode" id="mode" value="save-new-file"/>
+                    <input type="hidden" name="mode" id="mode" value="download-resource"/>
                 </div>
             </div>
         </form>
@@ -352,43 +356,32 @@ class stockpile{
         });
 
         $('#add-more-resource-ajax').click(function(){
-            $(this).prop('disabled',true);
-            var _moreResourceNo = $('#add-more-resource-no').val();
-            var _data = {id:_idChose,no: _moreResourceNo};
-
-            $.post('/stockpile.php',{data:_data, mode:"add-more-resource"},function(response){
-
-                $('#addMoreResourceModal').modal('hide');
-                window.location.href = '/stockpile.php?id='+response['id'];
-            });
+            sendRequest('add-more-resource');
 
         });
 
         $('#reset-resource-ajax').click(function(){
             if(!confirm('Are You Sure ????'))return;
-
-            var _moreResourceNo = $('#add-more-resource-no').val();
-            var _data = {id:_idChose,no: _moreResourceNo};
-            $(this).prop('disabled',true);
-            $.post('/stockpile.php',{data:_data, mode:"reset-resource"},function(response){
-                // $(this).attr('disabled',false);
-                $('#addMoreResourceModal').modal('hide');
-                window.location.href = '/stockpile.php?id='+response['id'];
-            });
+            sendRequest('reset-resource');
         });
 
         $('#delete-resource-ajax').click(function(){
             if(!confirm('Are You Sure ????'))return;
+            sendRequest('delete-resource');
+        });
 
+        function sendRequest(_mode){
             var _moreResourceNo = $('#add-more-resource-no').val();
             var _data = {id:_idChose,no: _moreResourceNo};
-            $(this).prop('disabled',true);
-            $.post('/stockpile.php',{data:_data, mode:"delete-resource"},function(response){
-                // $(this).attr('disabled',false);
+            $.post('/stockpile.php',{data:_data, mode:_mode},function(response){
+                response = JSON.parse(response);
+                $('#add-more-resource-no').val('');
                 $('#addMoreResourceModal').modal('hide');
-                window.location.href = '/stockpile.php?id='+response['id'];
+                console.log(response);
+                alertify.success(response.result);
+
             });
-        });
+        }
     })
 </script>
 

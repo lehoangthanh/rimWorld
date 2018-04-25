@@ -17,6 +17,7 @@
 </style>
 
 <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="./assets/AlertifyJS/build/css/alertify.css">
 <link rel="stylesheet" href="./assets/bootstrap-3.3.7-dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="./assets/css/style.css">
 
@@ -26,6 +27,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <!-- Latest compiled and minified JavaScript -->
     <script src="./assets/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script src="./assets/AlertifyJS/build/alertify.js"></script>
 
 <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
 
