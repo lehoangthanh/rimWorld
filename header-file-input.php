@@ -5,6 +5,8 @@
  * Date: 01-Feb-18
  * Time: 15:52
  */
+
+$arrQualityConst = array('Awful', 'Shoddy', 'Poor', 'Normal', 'Good', 'Superior', 'Excellent', 'Masterwork', 'Legendary')
 ?>
 <head>
     <title>Rimworld Ver 0.16</title>
