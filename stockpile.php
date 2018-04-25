@@ -21,7 +21,6 @@ $arrStockPile = $arrThingComps = array();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // The request is using the POST method
     $mode = $_POST['mode'];
-    $arrHuman = array();
     switch ($mode) {
         case'read-file':{
             $_SESSION['form-file-name'] = $_FILES['file_save']['name'];
@@ -224,7 +223,7 @@ class stockpile{
     <form enctype="multipart/form-data" method="post">
         <div class="panel panel-primary">
             <div class="panel-heading">
-                <div class="panel-title">Cheat People Skills</div>
+                <div class="panel-title">Resource Management</div>
             </div>
             <div class="panel-body">
                 <label for="basic-url">Choose your file save</label>
@@ -248,21 +247,21 @@ class stockpile{
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     <div class="panel-title">
-                        <label>Humans</label>
+                        <label>Stockpile List</label>
                         <!--                            <a href="javascript:void(0);" class="btn btn-primary" data-action="update-human" data-mode="up-skills">Up Skills</a>-->
-                        <button class="btn btn-primary">Up Skills</button>
+<!--                        <button class="btn btn-primary">Up Skills</button>-->
                     </div>
                 </div>
                 <div class="panel-body">
                     <div style="float: right;padding-bottom: 10px;">
                         <!--                        Up all to-->
-                        <input type="text" value="10000" id="all-value-to"/>
-                        <a href="javascript:void(0);" class="btn btn-primary" id="btn-up-value-to">Up</a>
+<!--                        <input type="text" value="10000" id="all-value-to"/>-->
+<!--                        <a href="javascript:void(0);" class="btn btn-primary" id="btn-up-value-to">Up</a>-->
 
                     </div>
                     <?php foreach($arrStockPile as $stockpile){?>
                     <p class="stockpile-name" style="background-color: <?php echo $stockpile['css-color']?>"> <?php echo $stockpile['label']. ' - '.$stockpile['color'] ?></p>
-                    <table class="table table-bordered table-responsive table-hover table-striped" id="table-resource">
+                    <table class="table table-bordered table-responsive table-hover table-striped">
                         <tbody>
 
                             <?php foreach($stockpile['data'] as $width=>$arrWidth){?>
@@ -283,7 +282,7 @@ class stockpile{
                                                         <label><?php echo"32px-".strtoupper($thingComps['def']) ?></label>
                                                     <?php } ?>
                                                     <span class="badge"><?php echo $thingComps['stack-count'] ?></span>
-                                                    <span class="stockpile-add-more"
+                                                    <span class="stockpile-add-more" data-action="add-more"
                                                         data-value='<?php echo "$width,$height,".$thingComps['def'].','.$thingComps['id'] ?>'>
                                                         <i class="fas fa-plus-square"></i>
                                                     </span>
@@ -318,7 +317,7 @@ class stockpile{
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addMoreResourceModal">Add More Resource</h5>
+                <h5 class="modal-title">Add More Resource</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -347,17 +346,9 @@ class stockpile{
 <script>
     $(function(){
         var _idChose = '';
-        $('#btn-up-value-to').click(function(e){
-            var val = $('#all-value-to').val();
-            $('#table-resource tbody input').val(val);
-        })
-
-        $('tbody').on('click','.stockpile-add-more',function(){
+        $('tbody').on('click','span[data-action="add-more"]',function(){
             _idChose = $(this).data('value');
             $('#addMoreResourceModal').modal('show');
-
-            // add-more-resource-no
-
         });
 
         $('#add-more-resource-ajax').click(function(){
