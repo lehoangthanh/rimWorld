@@ -1,0 +1,19 @@
+<equipment>
+	<primary>
+		<def>Gun_ChargeRifle</def>
+		<id>Gun_ChargeRifle9684</id>
+		<pos>(24, 0, 139)</pos>
+		<health>100000</health>
+		<stackCount>1</stackCount>
+		<verbTracker>
+			<verbs>
+				<li Class="Verb_Shoot">
+					<loadID>375141</loadID>
+					<currentTarget>null</currentTarget>
+				</li>
+			</verbs>
+		</verbTracker>
+		<quality>Normal</quality>
+		<taleRef IsNull="True" />
+	</primary>
+</equipment>

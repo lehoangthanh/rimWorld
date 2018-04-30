@@ -1,0 +1,11 @@
+<healthTracker>
+							<hediffSet>
+								<hediffs />
+							</hediffSet>
+							<surgeryBills>
+								<bills />
+							</surgeryBills>
+							<immunity>
+								<imList />
+							</immunity>
+						</healthTracker>

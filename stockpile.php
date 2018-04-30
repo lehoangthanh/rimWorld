@@ -377,7 +377,6 @@ class stockpile{
                 response = JSON.parse(response);
                 $('#add-more-resource-no').val('');
                 $('#addMoreResourceModal').modal('hide');
-                console.log(response);
                 alertify.success(response.result);
 
             });

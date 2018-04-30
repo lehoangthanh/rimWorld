@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 //                $arrResource[$id] = array('id'=>$id, 'def'=>$sDef, 'stackCount'=>$stackCount,'match'=>$match);
 
             }
-            $_SESSION['data-read-new-file'] = $contents;
+            $_SESSION['data-resource'] = $contents;
 
             $_SESSION['data-human'] = $arrHuman;
             break;
@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $formFileName = $_SESSION['form-file-name'];
 
             $arrHuman = isset($_SESSION['data-human']) ? $_SESSION['data-human'] : array();
-            $fileContent = isset($_SESSION['data-read-new-file']) ? $_SESSION['data-read-new-file'] : '';
+            $fileContent = isset($_SESSION['data-resource']) ? $_SESSION['data-resource'] : '';
 //            $human = $arrHuman['Human522'];
             foreach($arrHuman as $key=>$human){
                 $humanMatch = $human['match'];
@@ -128,25 +128,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
         }
-        case 'save-new-file': {
+        case 'reset-health':{
 
+            set_time_limit(-1);
+
+            $arrSkilLimit = array('Medicine','Cooking','Artistic','Crafting');
             $formFileName = $_SESSION['form-file-name'];
 
-            $arrResource = isset($_SESSION['data-resource']) ? $_SESSION['data-resource'] : array();
-            $fileContent = isset($_SESSION['data-read-new-file']) ? $_SESSION['data-read-new-file'] : '';
+            $arrHuman = isset($_SESSION['data-human']) ? $_SESSION['data-human'] : array();
+            $content = isset($_SESSION['data-resource']) ? $_SESSION['data-resource'] : '';
 
-            foreach($arrResource as $key=>$resource){
-                if(!isset($_POST[$key])){continue;}
-                if(!array_key_exists('match',$resource)){continue;}
+            $healthTemp = '<healthTracker>
+							<hediffSet>
+								<hediffs />
+							</hediffSet>
+							<surgeryBills>
+								<bills />
+							</surgeryBills>
+							<immunity>
+								<imList />
+							</immunity>
+						</healthTracker>';
+            foreach($arrHuman as $key=>$human){
+                $humanMatch = $human['match'];
+                $oldMatch = $humanMatch;
+                preg_match('/\<healthTracker>(.*?)<\/healthTracker>/s', $humanMatch, $healthMatch);
+                $health = $healthMatch[0];
+                $humanMatch = str_replace($health,$healthTemp,$humanMatch,$healthCount);
+                $content = str_replace($oldMatch,$humanMatch,$content,$contentCount);
 
-                $value = intval($_POST[$key]);
-                $match = $resource['match'];
-                $newMatch = preg_replace('/\<stackCount>(.*?)<\/stackCount>/s',"<stackCount>$value</stackCount>",$match);
-                $fileContent = str_replace($match,$newMatch,$fileContent);
 
             }
 
-            file_put_contents(fileTMP,$fileContent);
+            file_put_contents(fileTMP,$content);
 
             header('Content-Description: File Transfer');
             header('Content-Type: application/octet-stream');
@@ -158,7 +172,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             readfile(fileTMP);
 
             unlink(fileTMP);
-//            file_put_contents('../assets/file-tmp/file.rws','');
             break;
         }
 
@@ -203,6 +216,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="panel-title">
                             <label>Humans</label>
                             <a href="javascript:void(0);" class="btn btn-primary" data-action="update-human" data-mode="up-skills">Up Skills</a>
+                            <a href="javascript:void(0);" class="btn btn-warning" data-action="reset-health-human" >Reset Health</a>
     <!--                        <button class="btn btn-primary">Save File</button>-->
                         </div>
                     </div>
@@ -223,7 +237,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <tbody>
                             <?php foreach($arrHuman as $Human){?>
                                 <tr>
-                                    <td><?php echo $Human['id'] ?></td>
+                                    <td>
+                                        <?php echo $Human['id'] ?>
+                                        <a href="<?php echo '/people-detail.php?id='.$Human['id'] ?>&mode=read-file">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </td>
                                     <td><?php echo $Human['name'] ?></td>
                                     <td><?php echo $Human['kindDef'] ?></td>
                                    <td>
@@ -257,17 +276,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 </div>
 
-<script src="./assets/jquery/js/jquery-3.2.1.min.js"></script>
-<!-- Latest compiled and minified JavaScript -->
-<script src="./assets/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
-
 <script>
     $(function(){
         $('a[data-action="update-human"]').click(function(e){
            var mode = $(this).data('mode');
             $("#mode").val(mode);
             $("#f-save-new-file-human").submit();
-        })
+        });
+
+        $('a[data-action="reset-health-human"]').click(function(){
+            $("#mode").val('reset-health');
+            $("#f-save-new-file-human").submit();
+        });
     })
 </script>
 </body>
