@@ -5,28 +5,23 @@
  * Date: 4/17/2018
  * Time: 1:28 PM
  */
-
-const fileTMP = './assets/file-tmp/file.rws';
-
-if(!file_exists('./assets/file-tmp')){
-    mkdir('./assets/file-tmp');
-}
-
-if(!file_exists(fileTMP)){
-    $myfile = fopen(fileTMP, "w");
-    fclose($myfile);
-}
-if ( ! session_id() ) @ session_start();
+include_once './constant.php';
 $arrStockPile = $arrThingComps = array();
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     // The request is using the POST method
     $mode = $_POST['mode'];
+    $mode = ($mode) ? $mode : 'read-file';
+    $arrHuman = array();
     switch ($mode) {
         case'read-file':{
-            $_SESSION['form-file-name'] = $_FILES['file_save']['name'];
-            $contents = file_get_contents($_FILES['file_save']['tmp_name']);
+            if($_FILES['file_save']){
+                $_SESSION['form-file-name'] = $_FILES['file_save']['name'];
+                $content = file_get_contents($_FILES['file_save']['tmp_name']);
+            }else{
+                $content = $_SESSION['data-resource'];
+            }
 
-            preg_match_all('/\<li Class="Zone_Stockpile">(.*?)<\/settings>(.*?)<\/li>/s', $contents, $stockpileMatches);
+            preg_match_all('/\<li Class="Zone_Stockpile">(.*?)<\/settings>(.*?)<\/li>/s', $content, $stockpileMatches);
 
 
             foreach($stockpileMatches[0] as $key=>$stockPile){
@@ -60,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
 //            asort($arrStockPile[$key]['data']);
-            preg_match_all('/\<thing Class="ThingWithComps">(.*?)<\/thing>/s', $contents, $thingCompsMatches);
+            preg_match_all('/\<thing Class="ThingWithComps">(.*?)<\/thing>/s', $content, $thingCompsMatches);
             foreach($thingCompsMatches[1] as $key=>$thing){
                 preg_match_all('/\<id>(.*?)<\/id>/s', $thing, $idMatches);
                 preg_match_all('/\<def>(.*?)<\/def>/s', $thing, $defMatches);
@@ -86,17 +81,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $arrThingComps[$width][$height][$sDef]= array('id'=>$id,'def'=>$sDef,'pos'=>$pos, 'stack-count'=>$stackCount,'xml'=>$xml, 'full-xml' => $fullXml);
 
             }
-//            ksort($arrThingComps);
-//            <thing Class="Medicine">
 
-            $_SESSION['data-read-new-file'] = $contents;
-            $_SESSION['data-resource'] = $contents;
+            $_SESSION['data-resource'] = $content;
             $_SESSION['data-thing-comps'] = $arrThingComps;
             break;
         }
         case 'add-more-resource': {
             $data = $_POST['data'];
             stockpile::addMoreResource($data);
+            $_SESSION['token'] = md5($_SESSION['form-file-name']);
             echo json_encode(array('result'=>'success!!!'));
             die;
 
@@ -104,35 +97,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         case 'reset-resource': {
             $data = $_POST['data'];
             stockpile::resetResource($data);
+            $_SESSION['token'] = md5($_SESSION['form-file-name']);
             echo json_encode(array('result'=>'success!!!'));
             die;
         }
         case 'delete-resource': {
             $data = $_POST['data'];
             stockpile::resetResource($data, true);
+            $_SESSION['token'] = md5($_SESSION['form-file-name']);
             echo json_encode(array('result'=>'success!!!'));
             die;
         }
-        case 'download-resource':{
-            $fileContent = $_SESSION['data-resource'];
-            $formFileName = $_SESSION['form-file-name'];
-            file_put_contents(fileTMP,$fileContent);
-
-            header('Content-Description: File Transfer');
-            header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename="'.$formFileName.'"');
-            header('Expires: 0');
-            header('Cache-Control: must-revalidate');
-            header('Pragma: public');
-            header('Content-Length: ' . filesize(fileTMP));
-            readfile(fileTMP);
-
-            unlink(fileTMP);
-            break;
-        }
 
     }
-}
+
 
 
 class stockpile{
@@ -251,8 +229,6 @@ class stockpile{
                 <div class="panel-heading">
                     <div class="panel-title">
                         <label>Stockpile List</label>
-                        <!--                            <a href="javascript:void(0);" class="btn btn-primary" data-action="update-human" data-mode="up-skills">Up Skills</a>-->
-                        <button class="btn btn-primary">Save</button>
                     </div>
                 </div>
                 <div class="panel-body">

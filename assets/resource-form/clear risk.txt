@@ -1,0 +1,3 @@
+<mentalStateHandler>	
+								<curState IsNull="True" />							
+							</mentalStateHandler>

@@ -5,29 +5,21 @@
  * Date: 4/17/2018
  * Time: 1:28 PM
  */
+include_once './constant.php';
 
-const fileTMP = './assets/file-tmp/file.rws';
-
-if(!file_exists('./assets/file-tmp')){
-    mkdir('./assets/file-tmp');
-}
-
-
-if(!file_exists(fileTMP)){
-    $myfile = fopen(fileTMP, "w");
-    fclose($myfile);
-}
-if ( ! session_id() ) @ session_start();
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // The request is using the POST method
     $mode = $_POST['mode'];
+    $mode = ($mode) ? $mode : 'read-file';
     $arrHuman = array();
     switch ($mode) {
         case'read-file':{
-            $_SESSION['form-file-name'] = $_FILES['file_save']['name'];
-            $contents = file_get_contents($_FILES['file_save']['tmp_name']);
-
-            preg_match_all('/\<researchManager>(.*?)<\/researchManager>/s', $contents, $matches);
+            if($_FILES['file_save']){
+                $_SESSION['form-file-name'] = $_FILES['file_save']['name'];
+                $content = file_get_contents($_FILES['file_save']['tmp_name']);
+            }else{
+                $content = $_SESSION['data-resource'];
+            }
+            preg_match_all('/\<researchManager>(.*?)<\/researchManager>/s', $content, $matches);
             preg_match_all('/\<progress>(.*?)<\/progress>/s', $matches[1][0], $processMatches);
             preg_match_all('/\<keys>(.*?)<\/keys>/s', $processMatches[1][0], $keyMatches);
             preg_match_all('/\<values>(.*?)<\/values>/s', $processMatches[1][0], $valueMatches);
@@ -44,18 +36,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $arrResearch[$researchKey] = $researchValueMatches[1][$key];
             }
 
-            $_SESSION['data-read-new-file'] = $contents;
-            $_SESSION['data-resource'] = $researchValueMatches[1];
+            $_SESSION['data-resource'] = $content;
             break;
         }
         case 'save-new-file': {
 
             $formFileName = $_SESSION['form-file-name'];
+            $content = isset($_SESSION['data-resource']) ? $_SESSION['data-resource'] : array();
 
-            $arrResource = isset($_SESSION['data-resource']) ? $_SESSION['data-resource'] : array();
-            $fileContent = isset($_SESSION['data-read-new-file']) ? $_SESSION['data-read-new-file'] : '';
-
-            preg_match_all('/\<researchManager>(.*?)<\/researchManager>/s', $fileContent, $matches);
+            preg_match_all('/\<researchManager>(.*?)<\/researchManager>/s', $content, $matches);
             preg_match_all('/\<progress>(.*?)<\/progress>/s', $matches[1][0], $processMatches);
             preg_match_all('/\<keys>(.*?)<\/keys>/s', $processMatches[1][0], $keyMatches);
             preg_match_all('/\<values>(.*?)<\/values>/s', $processMatches[1][0], $valueMatches);
@@ -67,25 +56,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             }
             $reValue = "<values>\r\n\t\t\t\t\t$value\r\n\t\t\t\t</values>";
-            $fileContent = str_replace($valueMatches[0],$reValue,$fileContent);
+            $content = str_replace($valueMatches[0],$reValue,$content);
 
-            file_put_contents(fileTMP,$fileContent);
-
-            header('Content-Description: File Transfer');
-            header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename="'.$formFileName.'"');
-            header('Expires: 0');
-            header('Cache-Control: must-revalidate');
-            header('Pragma: public');
-            header('Content-Length: ' . filesize(fileTMP));
-            readfile(fileTMP);
-
-            unlink(fileTMP);
+            $_SESSION['data-resource'] = $content;
+            $_SESSION['token'] = md5($_SESSION['form-file-name']);
             break;
         }
 
     }
-}
+
 ?>
 <!DOCTYPE html>
 <html>

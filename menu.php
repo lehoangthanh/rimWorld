@@ -52,6 +52,7 @@ $uri = $_SERVER['REQUEST_URI'];
                 <li <?php echo ($uri == '/' || $uri == '/stockpile.php') ? 'class="active"' : '' ?> ><a href="/stockpile.php">Resource</a></li>
                 <li <?php echo ($uri == '/people.php') ? 'class="active"' : '' ?>><a href="/people.php">People</a></li>
                 <li <?php echo ($uri == '/research.php') ? 'class="active"' : '' ?>><a href="/research.php">Research</a></li>
+                <li ><a class="btn btn-default" href="<?php echo $uri.'?mode=save-file' ?>">Save File</a></li>
 <!--                <li><a href="#contact">Contact</a></li>-->
 <!--                <li class="dropdown">-->
 <!--                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>-->

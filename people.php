@@ -5,28 +5,21 @@
  * Date: 08-Jul-17
  * Time: 1:10 PM
  */
-const fileTMP = './assets/file-tmp/file.rws';
-
-if(!file_exists('./assets/file-tmp')){
-    mkdir('./assets/file-tmp');
-}
-
-
-if(!file_exists(fileTMP)){
-    $myfile = fopen(fileTMP, "w");
-    fclose($myfile);
-}
-if ( ! session_id() ) @ session_start();
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+include_once './constant.php';
     // The request is using the POST method
     $mode = $_POST['mode'];
+    $mode = ($mode) ? $mode : 'read-file';
     $arrHuman = array();
     switch ($mode) {
         case'read-file':{
-            $_SESSION['form-file-name'] = $_FILES['file_save']['name'];
-            $contents = file_get_contents($_FILES['file_save']['tmp_name']);
+            if($_FILES['file_save']){
+                $_SESSION['form-file-name'] = $_FILES['file_save']['name'];
+                $content = file_get_contents($_FILES['file_save']['tmp_name']);
+            }else{
+                $content = $_SESSION['data-resource'];
+            }
 
-            preg_match_all('/\<thing Class="Pawn">(.*?)<\/thing>/s', $contents, $matches);
+            preg_match_all('/\<thing Class="Pawn">(.*?)<\/thing>/s', $content, $matches);
 
             foreach($matches[0] as $key=>$match){
 
@@ -79,8 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 //                $arrResource[$id] = array('id'=>$id, 'def'=>$sDef, 'stackCount'=>$stackCount,'match'=>$match);
 
             }
-            $_SESSION['data-resource'] = $contents;
-
+            $_SESSION['data-resource'] = $content;
             $_SESSION['data-human'] = $arrHuman;
             break;
         }
@@ -91,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $formFileName = $_SESSION['form-file-name'];
 
             $arrHuman = isset($_SESSION['data-human']) ? $_SESSION['data-human'] : array();
-            $fileContent = isset($_SESSION['data-resource']) ? $_SESSION['data-resource'] : '';
+            $content = isset($_SESSION['data-resource']) ? $_SESSION['data-resource'] : '';
 //            $human = $arrHuman['Human522'];
             foreach($arrHuman as $key=>$human){
                 $humanMatch = $human['match'];
@@ -109,24 +101,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                    }
                     $humanNewMatch = str_replace($killMatch,$newMatch,$humanNewMatch);
                 }
-                $fileContent = str_replace($humanMatch,$humanNewMatch,$fileContent);
+                $content = str_replace($humanMatch,$humanNewMatch,$content);
             }
-
-            file_put_contents(fileTMP,$fileContent);
-
-            header('Content-Description: File Transfer');
-            header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename="'.$formFileName.'"');
-            header('Expires: 0');
-            header('Cache-Control: must-revalidate');
-            header('Pragma: public');
-            header('Content-Length: ' . filesize(fileTMP));
-            readfile(fileTMP);
-
-            unlink(fileTMP);
-            break;
-
-
+            $_SESSION['data-resource'] = $content;
+            $_SESSION['token'] = md5($_SESSION['form-file-name']);
+            echo json_encode(array('result'=>'success!!!'));
+            die;
         }
         case 'reset-health':{
 
@@ -149,34 +129,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 								<imList />
 							</immunity>
 						</healthTracker>';
+
+            $riskTemp = '<mentalStateHandler>	
+                            <curState IsNull="True" />							
+                        </mentalStateHandler>';
+
             foreach($arrHuman as $key=>$human){
                 $humanMatch = $human['match'];
                 $oldMatch = $humanMatch;
                 preg_match('/\<healthTracker>(.*?)<\/healthTracker>/s', $humanMatch, $healthMatch);
                 $health = $healthMatch[0];
                 $humanMatch = str_replace($health,$healthTemp,$humanMatch,$healthCount);
+
+                preg_match('/\<mentalStateHandler>(.*?)<\/mentalStateHandler>/s', $humanMatch, $riskMatch);
+                $risk = $riskMatch[0];
+                $humanMatch = str_replace($risk,$riskTemp,$humanMatch,$riskCount);
+
                 $content = str_replace($oldMatch,$humanMatch,$content,$contentCount);
 
-
             }
-
-            file_put_contents(fileTMP,$content);
-
-            header('Content-Description: File Transfer');
-            header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename="'.$formFileName.'"');
-            header('Expires: 0');
-            header('Cache-Control: must-revalidate');
-            header('Pragma: public');
-            header('Content-Length: ' . filesize(fileTMP));
-            readfile(fileTMP);
-
-            unlink(fileTMP);
-            break;
+            $_SESSION['data-resource'] = $content;
+            $_SESSION['token'] = md5($_SESSION['form-file-name']);
+            echo json_encode(array('result'=>'success!!!'));
+            die;
         }
 
     }
-}
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -280,14 +259,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $(function(){
         $('a[data-action="update-human"]').click(function(e){
            var mode = $(this).data('mode');
-            $("#mode").val(mode);
-            $("#f-save-new-file-human").submit();
+            sendRequest(mode);
         });
 
         $('a[data-action="reset-health-human"]').click(function(){
-            $("#mode").val('reset-health');
-            $("#f-save-new-file-human").submit();
+            var mode = 'reset-health';
+            sendRequest(mode);
         });
+
+        function sendRequest(_mode){
+
+            $.post('/people.php',{mode:_mode},function(response){
+                response = JSON.parse(response);
+                alertify.success(response.result);
+
+            });
+        }
     })
 </script>
 </body>

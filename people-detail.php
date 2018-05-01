@@ -5,27 +5,15 @@
  * Date: 08-Jul-17
  * Time: 1:10 PM
  */
-const fileTMP = './assets/file-tmp/file.rws';
-
-if(!file_exists('./assets/file-tmp')){
-    mkdir('./assets/file-tmp');
-}
-
-
-if(!file_exists(fileTMP)){
-    $myfile = fopen(fileTMP, "w");
-    fclose($myfile);
-}
-if ( ! session_id() ) @ session_start();
-
+include_once './constant.php';
     // The request is using the POST method
     $mode = $_GET['mode'];
     $arrHuman = array();
     switch ($mode) {
         case'read-file':{
             $humanId = $_GET['id'];
-            $contents = $_SESSION['data-resource'];
-            preg_match_all('/\<thing Class="Pawn">(.*?)<\/thing>/s', $contents, $matches);
+            $content = $_SESSION['data-resource'];
+            preg_match_all('/\<thing Class="Pawn">(.*?)<\/thing>/s', $content, $matches);
 
             foreach($matches[0] as $key=>$match){
 //
@@ -85,7 +73,7 @@ if ( ! session_id() ) @ session_start();
 
 
             }
-            $_SESSION['data-resource'] = $contents;
+            $_SESSION['data-resource'] = $content;
 
             $_SESSION['data-human'] = $arrHuman;
             break;
@@ -116,6 +104,7 @@ if ( ! session_id() ) @ session_start();
                 $content = str_replace($oldXml, $xml, $content);
             }
             $_SESSION['data-resource'] = $content;
+            $_SESSION['token'] = md5($_SESSION['form-file-name']);
             echo json_encode(array('result'=>'success!!!'));
             die;
 
@@ -123,26 +112,9 @@ if ( ! session_id() ) @ session_start();
         }
         case 'set-cloth': {
 
+            $_SESSION['token'] = md5($_SESSION['form-file-name']);
             break;
         }
-        case 'save-file':{
-
-            $formFileName = $_SESSION['form-file-name'];
-            $content = $_SESSION['data-resource'];
-            file_put_contents(fileTMP,$content);
-
-            header('Content-Description: File Transfer');
-            header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename="'.$formFileName.'"');
-            header('Expires: 0');
-            header('Cache-Control: must-revalidate');
-            header('Pragma: public');
-            header('Content-Length: ' . filesize(fileTMP));
-            readfile(fileTMP);
-            unlink(fileTMP);
-            break;
-        }
-
 
 }
 ?>
