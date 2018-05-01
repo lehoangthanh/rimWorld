@@ -67,3 +67,13 @@
 .set-cloth a{
     margin-right: 5px;
 }
+
+
+.reset-apparel{
+    display: inline-flex;
+    margin-left: 15px;
+}
+
+.reset-apparel select{
+    margin-left: 5px;
+}

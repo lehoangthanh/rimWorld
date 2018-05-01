@@ -145,6 +145,14 @@ include_once './constant.php';
                 $risk = $riskMatch[0];
                 $humanMatch = str_replace($risk,$riskTemp,$humanMatch,$riskCount);
 
+                People::processNeeds($humanMatch,'Need_Mood',10000);
+                People::processNeeds($humanMatch,'Need_Food',10000);
+                People::processNeeds($humanMatch,'Need_Rest',10000);
+                People::processNeeds($humanMatch,'Need_Joy',10000);
+                People::processNeeds($humanMatch,'Need_Beauty',10000);
+                People::processNeeds($humanMatch,'Need_Comfort',10000);
+                People::processNeeds($humanMatch,'Need_Space',10000);
+
                 $content = str_replace($oldMatch,$humanMatch,$content,$contentCount);
 
             }
@@ -153,9 +161,77 @@ include_once './constant.php';
             echo json_encode(array('result'=>'success!!!'));
             die;
         }
+        case 'reset-equipment':{
+
+            set_time_limit(-1);
+            $arrHuman = isset($_SESSION['data-human']) ? $_SESSION['data-human'] : array();
+            $content = isset($_SESSION['data-resource']) ? $_SESSION['data-resource'] : '';
+            $fileWeapontmpPath = './assets/resource-form/weapon/Gun-ChargeRifle.txt';
+            $weaponTemp = file_get_contents($fileWeapontmpPath);
+
+            foreach($arrHuman as $key=>$human) {
+                $humanMatch = $human['match'];
+                $oldMatch = $humanMatch;
+                preg_match('/\<equipment>(.*?)<\/equipment>/s', $humanMatch, $equipmentMatch);
+                $equipment = $equipmentMatch[0];
+                $humanMatch = str_replace($equipment, $weaponTemp, $humanMatch, $equipmentCount);
+                $content = str_replace($oldMatch, $humanMatch, $content, $contentCount);
+
+            }
+
+            $_SESSION['data-resource'] = $content;
+            $_SESSION['token'] = md5($_SESSION['form-file-name']);
+            echo json_encode(array('result'=>'success!!!'));
+            die;
+        }
+
+        case 'reset-apparel': {
+
+            $data = $_POST['data'];
+            $apparelId = $data['apparel_id'];
+            set_time_limit(-1);
+            $arrHuman = isset($_SESSION['data-human']) ? $_SESSION['data-human'] : array();
+            $content = isset($_SESSION['data-resource']) ? $_SESSION['data-resource'] : '';
+            $fileAppareltmpPath = "./assets/resource-form/apparel/$apparelId";
+            $apparelTemp = file_get_contents($fileAppareltmpPath);
+
+            foreach($arrHuman as $key=>$human) {
+                $humanMatch = $human['match'];
+                $oldMatch = $humanMatch;
+                preg_match('/\<apparel>(.*?)<\/apparel>/s', $humanMatch, $apparelMatch);
+                $apparel = $apparelMatch[0];
+                $humanMatch = str_replace($apparel, $apparelTemp, $humanMatch, $apparelCount);
+                $content = str_replace($oldMatch, $humanMatch, $content, $contentCount);
+
+            }
+
+            $_SESSION['data-resource'] = $content;
+            $_SESSION['token'] = md5($_SESSION['form-file-name']);
+            echo json_encode(array('result'=>'success!!!'));
+            die;
+        }
+
 
     }
 
+    class People {
+
+        /**
+         * @param $humanMatch
+         * @param $classNeeds
+         * @param int $currLevel
+         */
+        static function processNeeds(&$humanMatch, $classNeeds, $currLevel = 1000){
+            preg_match('/\<needs>(.*?)<\/needs>/s', $humanMatch, $needMatch);
+            $needs = $needMatch[1];
+
+            preg_match('/\<li Class="'.$classNeeds.'">(.*?)<\/li>/s', $needs, $needMoodMatch);
+            $needMood = $needMoodMatch[1];
+
+            preg_match('/\<curLevel>(.*?)<\/curLevel>/s', $needMood, $curLevelNeedMoodMatch);
+            $humanMatch = str_replace($curLevelNeedMoodMatch[0],"<curLevel>$currLevel</curLevel>",$humanMatch,$curLevelNeedMoodCount);
+        }
+    }
 ?>
 <!DOCTYPE html>
 <html>
@@ -196,6 +272,17 @@ include_once './constant.php';
                             <label>Humans</label>
                             <a href="javascript:void(0);" class="btn btn-primary" data-action="update-human" data-mode="up-skills">Up Skills</a>
                             <a href="javascript:void(0);" class="btn btn-warning" data-action="reset-health-human" >Reset Health</a>
+                            <a href="javascript:void(0);" class="btn btn-warning" data-action="reset-equipment" >Reset Equipment</a>
+                            <div class="reset-apparel">
+                                <a href="javascript:void(0);" class="btn btn-warning" data-action="reset-apparel" >Reset Apparel</a>
+                                <?php if($apparelsTmp) { ?>
+                                <select class="form-control" id="apparel-id">
+                                    <?php foreach($apparelsTmp as $apparelTmp){ ?>
+                                        <option value="<?php echo $apparelTmp ?>"><?php echo $apparelTmp ?></option>
+                                    <?php } ?>
+                                </select>
+                                <?php } ?>
+                            </div>
     <!--                        <button class="btn btn-primary">Save File</button>-->
                         </div>
                     </div>
@@ -267,9 +354,21 @@ include_once './constant.php';
             sendRequest(mode);
         });
 
-        function sendRequest(_mode){
+        $('a[data-action="reset-equipment"]').click(function(){
+            var mode = 'reset-equipment';
+            sendRequest(mode);
+        });
 
-            $.post('/people.php',{mode:_mode},function(response){
+        $('a[data-action="reset-apparel"]').click(function(){
+            var mode = 'reset-apparel';
+            var _id = $('#apparel-id').val();
+            var _data = {apparel_id:_id};
+            sendRequest(mode, _data);
+        });
+
+        function sendRequest(_mode,data){
+            data = (typeof data === 'undefined') ? [] : data;
+            $.post('/people.php',{data: data, mode:_mode},function(response){
                 response = JSON.parse(response);
                 alertify.success(response.result);
 
