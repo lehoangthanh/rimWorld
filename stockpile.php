@@ -56,31 +56,11 @@ $arrStockPile = $arrThingComps = array();
 
 //            asort($arrStockPile[$key]['data']);
             preg_match_all('/\<thing Class="ThingWithComps">(.*?)<\/thing>/s', $content, $thingCompsMatches);
-            foreach($thingCompsMatches[1] as $key=>$thing){
-                preg_match_all('/\<id>(.*?)<\/id>/s', $thing, $idMatches);
-                preg_match_all('/\<def>(.*?)<\/def>/s', $thing, $defMatches);
-                preg_match_all('/\<pos>(.*?)<\/pos>/s', $thing, $posMatches);
-                preg_match_all('/\<stackCount>(.*?)<\/stackCount>/s', $thing, $stackCountMatches);
+            stockpile::proccessThingComps($thingCompsMatches,$arrThingComps);
 
-                $id = $idMatches[1][0];
-                $sDef = $defMatches[1][0];
-                $pos = $posMatches[1][0];
-                $stackCount = $stackCountMatches[1][0];
 
-                stockpile::getWHbyPos($pos,$width, $height);
-                $xml = $thingCompsMatches[0][$key];
-                $fullXml = $xml;
-                if(array_key_exists($sDef,$arrThingComps[$width][$height])){
-                    $oldStackCount = $arrThingComps[$width][$height][$sDef]['stack-count'];
-                    $stackCount+= $oldStackCount;
-
-                    $fullXml = $arrThingComps[$width][$height][$sDef]['full-xml'];
-                    $fullXml .= $xml;
-                }
-
-                $arrThingComps[$width][$height][$sDef]= array('id'=>$id,'def'=>$sDef,'pos'=>$pos, 'stack-count'=>$stackCount,'xml'=>$xml, 'full-xml' => $fullXml);
-
-            }
+            preg_match_all('/\<thing Class="Medicine">(.*?)<\/thing>/s', $content, $thingCompsMatches);
+            stockpile::proccessThingComps($thingCompsMatches,$arrThingComps);
 
             $_SESSION['data-resource'] = $content;
             $_SESSION['data-thing-comps'] = $arrThingComps;
@@ -188,6 +168,38 @@ class stockpile{
         }
         $_SESSION['data-resource'] = $content;
         stockPile::addMoreResource($data);
+    }
+
+    /**
+     * @param $thingCompsMatches
+     * @param $arrThingComps
+     */
+    static function proccessThingComps($thingCompsMatches, &$arrThingComps){
+        foreach($thingCompsMatches[1] as $key=>$thing){
+            preg_match_all('/\<id>(.*?)<\/id>/s', $thing, $idMatches);
+            preg_match_all('/\<def>(.*?)<\/def>/s', $thing, $defMatches);
+            preg_match_all('/\<pos>(.*?)<\/pos>/s', $thing, $posMatches);
+            preg_match_all('/\<stackCount>(.*?)<\/stackCount>/s', $thing, $stackCountMatches);
+
+            $id = $idMatches[1][0];
+            $sDef = $defMatches[1][0];
+            $pos = $posMatches[1][0];
+            $stackCount = $stackCountMatches[1][0];
+
+            stockpile::getWHbyPos($pos,$width, $height);
+            $xml = $thingCompsMatches[0][$key];
+            $fullXml = $xml;
+            if(array_key_exists($sDef,$arrThingComps[$width][$height])){
+                $oldStackCount = $arrThingComps[$width][$height][$sDef]['stack-count'];
+                $stackCount+= $oldStackCount;
+
+                $fullXml = $arrThingComps[$width][$height][$sDef]['full-xml'];
+                $fullXml .= $xml;
+            }
+
+            $arrThingComps[$width][$height][$sDef]= array('id'=>$id,'def'=>$sDef,'pos'=>$pos, 'stack-count'=>$stackCount,'xml'=>$xml, 'full-xml' => $fullXml);
+
+        }
     }
 }
 
