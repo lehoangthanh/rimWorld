@@ -56,11 +56,14 @@ $arrStockPile = $arrThingComps = array();
 
 //            asort($arrStockPile[$key]['data']);
             preg_match_all('/\<thing Class="ThingWithComps">(.*?)<\/thing>/s', $content, $thingCompsMatches);
-            stockpile::proccessThingComps($thingCompsMatches,$arrThingComps);
+            stockpile::proccessThingComps($thingCompsMatches[1], $thingCompsMatches[0],$arrThingComps);
 
 
             preg_match_all('/\<thing Class="Medicine">(.*?)<\/thing>/s', $content, $thingCompsMatches);
-            stockpile::proccessThingComps($thingCompsMatches,$arrThingComps);
+            stockpile::proccessThingComps($thingCompsMatches[1],$thingCompsMatches[0],$arrThingComps);
+
+            preg_match_all('/\<thing>(.*?)<def>(Chunk)(.*?)<\/thing>/s', $content, $thingCompsMatches);
+            stockpile::proccessThingComps($thingCompsMatches[0],$thingCompsMatches[0],$arrThingComps);
 
             $_SESSION['data-resource'] = $content;
             $_SESSION['data-thing-comps'] = $arrThingComps;
@@ -171,11 +174,12 @@ class stockpile{
     }
 
     /**
-     * @param $thingCompsMatches
+     * @param $thingCompsMatchesValue
+     * @param $thingCompsMatchesFull
      * @param $arrThingComps
      */
-    static function proccessThingComps($thingCompsMatches, &$arrThingComps){
-        foreach($thingCompsMatches[1] as $key=>$thing){
+    static function proccessThingComps($thingCompsMatchesValue, $thingCompsMatchesFull, &$arrThingComps){
+        foreach($thingCompsMatchesValue as $key=>$thing){
             preg_match_all('/\<id>(.*?)<\/id>/s', $thing, $idMatches);
             preg_match_all('/\<def>(.*?)<\/def>/s', $thing, $defMatches);
             preg_match_all('/\<pos>(.*?)<\/pos>/s', $thing, $posMatches);
@@ -187,7 +191,7 @@ class stockpile{
             $stackCount = $stackCountMatches[1][0];
 
             stockpile::getWHbyPos($pos,$width, $height);
-            $xml = $thingCompsMatches[0][$key];
+            $xml = $thingCompsMatchesFull[$key];
             $fullXml = $xml;
             if(array_key_exists($sDef,$arrThingComps[$width][$height])){
                 $oldStackCount = $arrThingComps[$width][$height][$sDef]['stack-count'];
@@ -259,11 +263,11 @@ class stockpile{
                                 <tr>
                                 <?php foreach($arrWidth as $height){?>
                                     <td class="box-15">
+                                        <?php echo "($height, 0, $width) "; ?>
                                         <?php if(array_key_exists($height,$arrThingComps[$width])) { ?>
 
                                             <?php foreach($arrThingComps[$width][$height] as $thingComps){?>
                                                 <div class="thing-comps-item">
-                                                    <?php echo $thingComps['pos'] ?><br/>
                                                     <?php $fileName = "./assets/images/32px-".strtoupper($thingComps['def']).'.png'; ?>
                                                     <?php if (file_exists($fileName)){ ?>
                                                     <img class="img-resource"
@@ -281,9 +285,7 @@ class stockpile{
                                                 </div>
 
                                             <?php }?>
-
                                         <?php }?>
-
                                     </td>
                                 <?php }?>
                                 </tr>
