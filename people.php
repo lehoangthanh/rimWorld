@@ -87,7 +87,7 @@ include_once './constant.php';
 //            $human = $arrHuman['Human522'];
             foreach($arrHuman as $key=>$human){
                 $humanMatch = $human['match'];
-                $humanNewMatch = $humanMatch;
+                $oldMatch = $humanMatch;
 
                 foreach($human['skills'] as $key=>$skill){
 
@@ -99,9 +99,12 @@ include_once './constant.php';
                    }else{
                        $newMatch = str_replace('</def>', "</def>\n\t\t\t\t\t\t\t\t\t<level>$iLevel</level>", $killMatch);
                    }
-                    $humanNewMatch = str_replace($killMatch,$newMatch,$humanNewMatch);
+                    $humanMatch = str_replace($killMatch,$newMatch,$humanMatch);
+
                 }
-                $content = str_replace($humanMatch,$humanNewMatch,$content);
+
+                $_SESSION['data-human'][$key] = $humanMatch;
+                $content = str_replace($oldMatch,$humanMatch,$content);
             }
             $_SESSION['data-resource'] = $content;
             $_SESSION['token'] = md5($_SESSION['form-file-name']);
@@ -153,6 +156,7 @@ include_once './constant.php';
                 People::processNeeds($humanMatch,'Need_Comfort',10000);
                 People::processNeeds($humanMatch,'Need_Space',10000);
 
+                $_SESSION['data-human'][$key]['match'] = $humanMatch;
                 $content = str_replace($oldMatch,$humanMatch,$content,$contentCount);
 
             }
@@ -175,6 +179,8 @@ include_once './constant.php';
                 preg_match('/\<equipment>(.*?)<\/equipment>/s', $humanMatch, $equipmentMatch);
                 $equipment = $equipmentMatch[0];
                 $humanMatch = str_replace($equipment, $weaponTemp, $humanMatch, $equipmentCount);
+
+                $_SESSION['data-human'][$key]['match'] = $humanMatch;
                 $content = str_replace($oldMatch, $humanMatch, $content, $contentCount);
 
             }
@@ -201,6 +207,8 @@ include_once './constant.php';
                 preg_match('/\<apparel>(.*?)<\/apparel>/s', $humanMatch, $apparelMatch);
                 $apparel = $apparelMatch[0];
                 $humanMatch = str_replace($apparel, $apparelTemp, $humanMatch, $apparelCount);
+
+                $_SESSION['data-human'][$key]['match'] = $humanMatch;
                 $content = str_replace($oldMatch, $humanMatch, $content, $contentCount);
 
             }

@@ -1,0 +1,18 @@
+<equipment>
+	<primary>
+		<def>Gun_TripleRocket</def>
+		<id>Gun_TripleRocket269052</id>
+		<pos>(95, 0, 132)</pos>
+		<health>100</health>
+		<stackCount>1</stackCount>
+		<verbTracker>
+			<verbs>
+				<li Class="Verb_ShootOneUse">
+					<loadID>7700543</loadID>
+				</li>
+			</verbs>
+		</verbTracker>
+		<quality>Good</quality>
+		<taleRef IsNull="True" />
+	</primary>
+</equipment>
