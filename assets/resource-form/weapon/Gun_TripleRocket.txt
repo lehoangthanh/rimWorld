@@ -3,7 +3,7 @@
 		<def>Gun_TripleRocket</def>
 		<id>Gun_TripleRocket269052</id>
 		<pos>(95, 0, 132)</pos>
-		<health>100</health>
+		<health>100000</health>
 		<stackCount>1</stackCount>
 		<verbTracker>
 			<verbs>
@@ -12,7 +12,7 @@
 				</li>
 			</verbs>
 		</verbTracker>
-		<quality>Good</quality>
+		<quality>Legendary</quality>
 		<taleRef IsNull="True" />
 	</primary>
 </equipment>

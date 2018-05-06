@@ -14,6 +14,7 @@ $arrStockPile = $arrThingComps = array();
     $arrHuman = array();
     switch ($mode) {
         case'read-file':{
+            $_SESSION['full-thing-compos'] = array();
             if($_FILES['file_save']){
                 $_SESSION['form-file-name'] = $_FILES['file_save']['name'];
                 $content = file_get_contents($_FILES['file_save']['tmp_name']);
@@ -62,8 +63,8 @@ $arrStockPile = $arrThingComps = array();
             preg_match_all('/\<thing Class="Medicine">(.*?)<\/thing>/s', $content, $thingCompsMatches);
             stockpile::proccessThingComps($thingCompsMatches[1],$thingCompsMatches[0],$arrThingComps);
 
-            preg_match_all('/\<thing>(.*?)<def>(Chunk)(.*?)<\/thing>/s', $content, $thingCompsMatches);
-            stockpile::proccessThingComps($thingCompsMatches[0],$thingCompsMatches[0],$arrThingComps);
+//            preg_match_all('/\<thing>(.*?)<def>(Chunk)(.*?)<\/thing>/s', $content, $thingCompsMatches);
+//            stockpile::proccessThingComps($thingCompsMatches[0],$thingCompsMatches[0],$arrThingComps);
 
             $_SESSION['data-resource'] = $content;
             $_SESSION['data-thing-comps'] = $arrThingComps;
@@ -88,6 +89,27 @@ $arrStockPile = $arrThingComps = array();
             $data = $_POST['data'];
             stockpile::resetResource($data, true);
             $_SESSION['token'] = md5($_SESSION['form-file-name']);
+            echo json_encode(array('result'=>'success!!!'));
+            die;
+        }
+
+        case 'reset-health':{
+            $content = ($_SESSION['data-resource']) ? $_SESSION['data-resource'] : array();
+            $arrThingComps = ($_SESSION['full-thing-compos']) ? $_SESSION['full-thing-compos'] : array();
+
+            foreach($arrThingComps as $thingComp) {
+                $health = $thingComp['health'];
+                if ($health == 0) continue;
+                $xml = $thingComp['xml'];
+                $oldXml = $xml;
+
+                $xml = str_replace("<health>$health</health>", '<health>100000000</health>', $xml);
+                $content = str_replace($oldXml, $xml, $content, $countReplace);
+
+            }
+
+            $_SESSION['token'] = md5($_SESSION['form-file-name']);
+            $_SESSION['data-resource'] = $content;
             echo json_encode(array('result'=>'success!!!'));
             die;
         }
@@ -179,29 +201,42 @@ class stockpile{
      * @param $arrThingComps
      */
     static function proccessThingComps($thingCompsMatchesValue, $thingCompsMatchesFull, &$arrThingComps){
+
         foreach($thingCompsMatchesValue as $key=>$thing){
             preg_match_all('/\<id>(.*?)<\/id>/s', $thing, $idMatches);
             preg_match_all('/\<def>(.*?)<\/def>/s', $thing, $defMatches);
             preg_match_all('/\<pos>(.*?)<\/pos>/s', $thing, $posMatches);
             preg_match_all('/\<stackCount>(.*?)<\/stackCount>/s', $thing, $stackCountMatches);
+            preg_match_all('/\<health>(.*?)<\/health>/s', $thing, $healthMatches);
 
             $id = $idMatches[1][0];
             $sDef = $defMatches[1][0];
             $pos = $posMatches[1][0];
             $stackCount = $stackCountMatches[1][0];
+            $health = intval($healthMatches[1][0]);
 
             stockpile::getWHbyPos($pos,$width, $height);
             $xml = $thingCompsMatchesFull[$key];
             $fullXml = $xml;
             if(array_key_exists($sDef,$arrThingComps[$width][$height])){
                 $oldStackCount = $arrThingComps[$width][$height][$sDef]['stack-count'];
+                $oldHealth = $arrThingComps[$width][$height][$sDef]['health'];
+                $health = ($health > $oldHealth) ? $health : $oldHealth;
+                $arrThingComps[$width][$height][$sDef]['health'] = $health;
                 $stackCount+= $oldStackCount;
 
                 $fullXml = $arrThingComps[$width][$height][$sDef]['full-xml'];
                 $fullXml .= $xml;
+            }else{
+
+                if($health > 0) {
+                    $thingComps = array('id' => $id, 'def' => $sDef, 'pos' => $pos, 'stack-count' => $stackCount, 'health' => $health, 'xml' => $xml, 'full-xml' => $fullXml);
+                    $_SESSION['full-thing-compos'] []= $thingComps;
+                }
             }
 
-            $arrThingComps[$width][$height][$sDef]= array('id'=>$id,'def'=>$sDef,'pos'=>$pos, 'stack-count'=>$stackCount,'xml'=>$xml, 'full-xml' => $fullXml);
+            $thingComps = array('id'=>$id,'def'=>$sDef,'pos'=>$pos, 'stack-count'=>$stackCount, 'health'=>$health, 'xml'=>$xml, 'full-xml' => $fullXml);
+            $arrThingComps[$width][$height][$sDef]= $thingComps;
 
         }
     }
@@ -245,6 +280,7 @@ class stockpile{
                 <div class="panel-heading">
                     <div class="panel-title">
                         <label>Stockpile List</label>
+                        <a href="javascript:void(0);" class="btn btn-warning" data-action="reset-health" >Reset Health</a>
                     </div>
                 </div>
                 <div class="panel-body">
@@ -278,6 +314,9 @@ class stockpile{
                                                         <label><?php echo"32px-".strtoupper($thingComps['def']) ?></label>
                                                     <?php } ?>
                                                     <span class="badge"><?php echo $thingComps['stack-count'] ?></span>
+                                                    <span style="<?php echo ($thingComps['health'] <50 ) ? 'color:red' : '' ?>">
+                                                        <?php echo $thingComps['health']?>
+                                                    </span>
                                                     <span class="stockpile-add-more" data-action="add-more"
                                                         data-value='<?php echo "$width,$height,".$thingComps['def'].','.$thingComps['id'] ?>'>
                                                         <i class="fas fa-plus-square"></i>
@@ -358,6 +397,11 @@ class stockpile{
         $('#delete-resource-ajax').click(function(){
             if(!confirm('Are You Sure ????'))return;
             sendRequest('delete-resource');
+        });
+
+        $('a[data-action="reset-health"]').click(function(){
+            sendRequest('reset-health');
+
         });
 
         function sendRequest(_mode){

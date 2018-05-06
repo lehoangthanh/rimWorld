@@ -19,6 +19,7 @@ if(!file_exists(fileTMP)){
 if ( ! session_id() ) @ session_start();
 
 $apparelsTmp = array_diff(scandir('./assets/resource-form/apparel'), array('..', '.'));
+$weaponsTmp = array_diff(scandir('./assets/resource-form/weapon'), array('..', '.'));
 $mode = array_key_exists('mode',$_GET) ? $_GET['mode'] : null;
 $scriptName = $_SERVER['SCRIPT_NAME'];
 if($mode == 'save-file'&& $_SESSION['token']) {

@@ -170,7 +170,13 @@ include_once './constant.php';
             set_time_limit(-1);
             $arrHuman = isset($_SESSION['data-human']) ? $_SESSION['data-human'] : array();
             $content = isset($_SESSION['data-resource']) ? $_SESSION['data-resource'] : '';
-            $fileWeapontmpPath = './assets/resource-form/weapon/Gun-ChargeRifle.txt';
+
+            $weaponId = $_POST['data']['weapon_id'];
+            $fileWeapontmpPath = './assets/resource-form/weapon/'.$weaponId;
+            if(!file_exists($fileWeapontmpPath)){
+                echo json_encode(array('result'=>"$weaponId Not Found!!!"));
+                die;
+            }
             $weaponTemp = file_get_contents($fileWeapontmpPath);
 
             foreach($arrHuman as $key=>$human) {
@@ -280,7 +286,17 @@ include_once './constant.php';
                             <label>Humans</label>
                             <a href="javascript:void(0);" class="btn btn-primary" data-action="update-human" data-mode="up-skills">Up Skills</a>
                             <a href="javascript:void(0);" class="btn btn-warning" data-action="reset-health-human" >Reset Health</a>
-                            <a href="javascript:void(0);" class="btn btn-warning" data-action="reset-equipment" >Reset Equipment</a>
+                            <div class="reset-apparel">
+                                <a href="javascript:void(0);" class="btn btn-warning" data-action="reset-equipment" >Reset Equipment</a>
+                                <?php if($weaponsTmp) { ?>
+                                    <select class="form-control" id="weapon-id">
+                                        <?php foreach($weaponsTmp as $weaponTmp){ ?>
+                                            <option value="<?php echo $weaponTmp ?>"><?php echo $weaponTmp ?></option>
+                                        <?php } ?>
+                                    </select>
+                                <?php } ?>
+                            </div>
+
                             <div class="reset-apparel">
                                 <a href="javascript:void(0);" class="btn btn-warning" data-action="reset-apparel" >Reset Apparel</a>
                                 <?php if($apparelsTmp) { ?>
@@ -364,7 +380,9 @@ include_once './constant.php';
 
         $('a[data-action="reset-equipment"]').click(function(){
             var mode = 'reset-equipment';
-            sendRequest(mode);
+            var _id = $('#weapon-id').val();
+            var _data = {weapon_id:_id};
+            sendRequest(mode,_data);
         });
 
         $('a[data-action="reset-apparel"]').click(function(){

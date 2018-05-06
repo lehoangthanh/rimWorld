@@ -13,7 +13,7 @@
 				</li>
 			</verbs>
 		</verbTracker>
-		<quality>Normal</quality>
+		<quality>Legendary</quality>
 		<taleRef IsNull="True" />
 	</primary>
 </equipment>
