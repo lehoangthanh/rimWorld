@@ -1,0 +1,8 @@
+<thing Class="ThingWithComps">
+						<def>Chemfuel</def>
+						<id>Chemfuel244943</id>
+						<map>0</map>
+						<pos>(11, 0, 134)</pos>
+						<health>100000000</health>
+						<stackCount>500</stackCount>
+					</thing>

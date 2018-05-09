@@ -1,0 +1,9 @@
+<thing Class="Medicine">
+						<def>HerbalMedicine</def>
+						<id>HerbalMedicine216631</id>
+						<map>0</map>
+						<pos>(25, 0, 126)</pos>
+						<health>100000000</health>
+						<stackCount>500</stackCount>
+						<rotProg>22609</rotProg>
+					</thing>

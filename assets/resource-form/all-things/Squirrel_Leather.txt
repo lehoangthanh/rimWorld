@@ -1,0 +1,8 @@
+<thing Class="ThingWithComps">
+						<def>Squirrel_Leather</def>
+						<id>Squirrel_Leather246435</id>
+						<map>0</map>
+						<pos>(13, 0, 134)</pos>
+						<health>100000000</health>
+						<stackCount>500</stackCount>
+					</thing>

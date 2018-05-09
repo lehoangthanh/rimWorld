@@ -1,0 +1,11 @@
+<thing Class="ThingWithComps">
+						<def>ThrumboHorn</def>
+						<id>ThrumboHorn291395</id>
+						<map>0</map>
+						<pos>(15, 0, 139)</pos>
+						<health>100000000</health>
+						<stackCount>500</stackCount>
+						<verbTracker>
+							<verbs IsNull="True" />
+						</verbTracker>
+					</thing>

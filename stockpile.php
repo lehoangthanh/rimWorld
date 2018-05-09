@@ -9,19 +9,21 @@ include_once './constant.php';
 $arrStockPile = $arrThingComps = array();
 
     // The request is using the POST method
-    $mode = $_POST['mode'];
-    $mode = ($mode) ? $mode : 'read-file';
+    $mode = isset($_POST['mode']) ? $_POST['mode'] : 'read-file';
+//    $mode = ($mode) ? $mode : 'read-file';
     $arrHuman = array();
     switch ($mode) {
         case'read-file':{
             $_SESSION['full-thing-compos'] = array();
-            if($_FILES['file_save']){
+            if(isset($_FILES['file_save'])){
                 $_SESSION['form-file-name'] = $_FILES['file_save']['name'];
                 $content = file_get_contents($_FILES['file_save']['tmp_name']);
             }else{
                 $content = $_SESSION['data-resource'];
             }
-
+            if($content == null){
+                break;
+            }
             preg_match_all('/\<li Class="Zone_Stockpile">(.*?)<\/settings>(.*?)<\/li>/s', $content, $stockpileMatches);
 
 
@@ -213,30 +215,49 @@ class stockpile{
             $sDef = $defMatches[1][0];
             $pos = $posMatches[1][0];
             $stackCount = $stackCountMatches[1][0];
-            $health = intval($healthMatches[1][0]);
+            $health = ($healthMatches[1]) ? intval($healthMatches[1][0]) : 0;
 
             stockpile::getWHbyPos($pos,$width, $height);
+            if($width == 0 || $height == 0){continue;}
             $xml = $thingCompsMatchesFull[$key];
             $fullXml = $xml;
-            if(array_key_exists($sDef,$arrThingComps[$width][$height])){
+
+            if(!isset($arrThingComps[$width][$height])){
+                $thingComps = array('id'=>$id,'def'=>$sDef,'pos'=>$pos, 'stack-count'=>$stackCount, 'health'=>$health, 'xml'=>$xml, 'full-xml' => $fullXml);
+                $arrThingComps[$width][$height][$sDef]= $thingComps;
+
+                if ($health > 0) {
+                    $thingComps = array('id' => $id, 'def' => $sDef, 'pos' => $pos, 'stack-count' => $stackCount, 'health' => $health, 'xml' => $xml, 'full-xml' => $fullXml);
+                    $_SESSION['full-thing-compos'] [] = $thingComps;
+                }
+                $allThingResourcePath = $_SERVER['DOCUMENT_ROOT']."/assets/resource-form/all-things/$sDef.txt";
+                if (!file_exists($allThingResourcePath)) {
+                    $fp = fopen($allThingResourcePath, "wb");
+                    if ($fp) {
+                        $xmlTmp = str_replace("<stackCount>$stackCount</stackCount>", '<stackCount>500</stackCount>', $xml);
+                        if ($health > 0) {
+                            $xmlTmp = str_replace("<health>$health</health>", '<health>100000000</health>', $xmlTmp);
+                        }
+                        fwrite($fp, $xmlTmp);
+                        fclose($fp);
+                    }
+
+                }
+
+            }else {
+
                 $oldStackCount = $arrThingComps[$width][$height][$sDef]['stack-count'];
                 $oldHealth = $arrThingComps[$width][$height][$sDef]['health'];
                 $health = ($health > $oldHealth) ? $health : $oldHealth;
                 $arrThingComps[$width][$height][$sDef]['health'] = $health;
-                $stackCount+= $oldStackCount;
+                $stackCount += $oldStackCount;
 
                 $fullXml = $arrThingComps[$width][$height][$sDef]['full-xml'];
                 $fullXml .= $xml;
-            }else{
 
-                if($health > 0) {
-                    $thingComps = array('id' => $id, 'def' => $sDef, 'pos' => $pos, 'stack-count' => $stackCount, 'health' => $health, 'xml' => $xml, 'full-xml' => $fullXml);
-                    $_SESSION['full-thing-compos'] []= $thingComps;
-                }
+                $thingComps = array('id' => $id, 'def' => $sDef, 'pos' => $pos, 'stack-count' => $stackCount, 'health' => $health, 'xml' => $xml, 'full-xml' => $fullXml);
+                $arrThingComps[$width][$height][$sDef] = $thingComps;
             }
-
-            $thingComps = array('id'=>$id,'def'=>$sDef,'pos'=>$pos, 'stack-count'=>$stackCount, 'health'=>$health, 'xml'=>$xml, 'full-xml' => $fullXml);
-            $arrThingComps[$width][$height][$sDef]= $thingComps;
 
         }
     }
@@ -290,47 +311,56 @@ class stockpile{
 <!--                        <a href="javascript:void(0);" class="btn btn-primary" id="btn-up-value-to">Up</a>-->
 
                     </div>
-                    <?php foreach($arrStockPile as $stockpile){?>
-                    <p class="stockpile-name" style="background-color: <?php echo $stockpile['css-color']?>"> <?php echo $stockpile['label']. ' - '.$stockpile['color'] ?></p>
-                    <table class="table table-bordered table-responsive table-hover table-striped">
-                        <tbody>
+                    <?php if($arrStockPile){ ?>
+                        <?php foreach($arrStockPile as $stockpile){?>
+                        <p class="stockpile-name" style="background-color: <?php echo $stockpile['css-color']?>"> <?php echo $stockpile['label']. ' - '.$stockpile['color'] ?></p>
+                        <table class="table table-bordered table-responsive table-hover table-striped">
+                            <tbody>
 
-                            <?php foreach($stockpile['data'] as $width=>$arrWidth){?>
-                                <tr>
-                                <?php foreach($arrWidth as $height){?>
-                                    <td class="box-15">
-                                        <?php echo "($height, 0, $width) "; ?>
-                                        <?php if(array_key_exists($height,$arrThingComps[$width])) { ?>
+                                <?php foreach($stockpile['data'] as $width=>$arrWidth){?>
+                                    <tr>
+                                    <?php foreach($arrWidth as $height){?>
+                                        <td class="box-15">
 
-                                            <?php foreach($arrThingComps[$width][$height] as $thingComps){?>
-                                                <div class="thing-comps-item">
-                                                    <?php $fileName = "./assets/images/32px-".strtoupper($thingComps['def']).'.png'; ?>
-                                                    <?php if (file_exists($fileName)){ ?>
-                                                    <img class="img-resource"
-                                                         alt="<?php echo $thingComps['def'] ?>"
-                                                         title="<?php echo $thingComps['id'] ?>"
-                                                         src="<?php echo $fileName ?>"/>
-                                                    <?php } else{ ?>
-                                                        <label><?php echo"32px-".strtoupper($thingComps['def']) ?></label>
-                                                    <?php } ?>
-                                                    <span class="badge"><?php echo $thingComps['stack-count'] ?></span>
-                                                    <span style="<?php echo ($thingComps['health'] <50 ) ? 'color:red' : '' ?>">
-                                                        <?php echo $thingComps['health']?>
-                                                    </span>
-                                                    <span class="stockpile-add-more" data-action="add-more"
-                                                        data-value='<?php echo "$width,$height,".$thingComps['def'].','.$thingComps['id'] ?>'>
+                                            <?php if(!array_key_exists($width,$arrThingComps)){continue;} ?>
+                                            <?php echo "($height, 0, $width) "; ?>
+                                            <?php if(array_key_exists($height,$arrThingComps[$width])) { ?>
+
+                                                <?php foreach($arrThingComps[$width][$height] as $thingComps){?>
+                                                    <div class="thing-comps-item">
+                                                        <?php $fileName = "./assets/images/32px-".strtoupper($thingComps['def']).'.png'; ?>
+                                                        <?php if (file_exists($fileName)){ ?>
+                                                        <img class="img-resource"
+                                                             alt="<?php echo $thingComps['def'] ?>"
+                                                             title="<?php echo $thingComps['id'] ?>"
+                                                             src="<?php echo $fileName ?>"/>
+                                                        <?php } else{ ?>
+                                                            <label><?php echo"32px-".strtoupper($thingComps['def']) ?></label>
+                                                        <?php } ?>
+                                                        <span class="badge"><?php echo $thingComps['stack-count'] ?></span>
+                                                        <span style="<?php echo ($thingComps['health'] <50 ) ? 'color:red' : '' ?>">
+                                                            <?php echo $thingComps['health']?>
+                                                        </span>
+                                                        <span class="stockpile-add-more" data-action="add-more"
+                                                            data-value='<?php echo "$width,$height,".$thingComps['def'].','.$thingComps['id'] ?>'>
+                                                            <i class="fas fa-plus-square"></i>
+                                                        </span>
+                                                    </div>
+
+                                                <?php }?>
+                                            <?php }else{ ?>
+                                                <span class="stockpile-add-more" data-action="add-new"
+                                                  data-value='<?php echo "$width,$height" ?>'>
                                                         <i class="fas fa-plus-square"></i>
-                                                    </span>
-                                                </div>
-
-                                            <?php }?>
-                                        <?php }?>
-                                    </td>
+                                                </span>
+                                            <?php } ?>
+                                        </td>
+                                    <?php }?>
+                                    </tr>
                                 <?php }?>
-                                </tr>
-                            <?php }?>
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                        <?php }?>
                     <?php }?>
                 </div>
                 <div class="panel-footer">
@@ -372,9 +402,56 @@ class stockpile{
     </div>
 </div>
 
+
+<!-- Modal add new réource-->
+<section class="modal fade" id="addNewResourceModal" tabindex="-1" role="dialog" aria-labelledby="addNewResourceModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Resource</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                   <?php if($allThingsTmp){ ?>
+                        <select id="sel-add-new" class="show-menu-arrow" data-width="100px">
+                            <?php foreach($allThingsTmp as $allThingTmp){ ?>
+                                <?php $sDef = str_replace('.txt','',$allThingTmp); ?>
+                                <?php $fileName = "./assets/images/32px-".strtoupper($sDef).'.png'; ?>
+                                <option
+                                        data-content="<span class='all-thing-name'><?php echo $sDef; ?></span>"
+                                        value="<?php echo $allThingTmp ?>" style="background-image:url('<?php echo $fileName; ?>'); background-repeat: no-repeat;    background-size: 25px">
+                                    <?php echo $allThingTmp ?>
+                                </option>
+                            <?php } ?>
+                        </select>
+                    <?php } ?>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="add-more-resource-ajax" class="btn btn-primary">Save changes</button>
+                <button type="button" id="reset-resource-ajax" class="btn btn-warning">Reset Resource</button>
+                <button type="button" id="delete-resource-ajax" class="btn btn-danger">Delete Resource</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<link rel="stylesheet" href="./assets/bootstrap-select-1.12.4/css/bootstrap-select.min.css">
+
 <script src="./assets/jquery/js/jquery-3.2.1.min.js"></script>
 <!-- Latest compiled and minified JavaScript -->
 <script src="./assets/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+
+<!-- Latest compiled and minified CSS -->
+
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="./assets/bootstrap-select-1.12.4/js/bootstrap-select.js"></script>
 
 <script>
     $(function(){
@@ -404,6 +481,12 @@ class stockpile{
 
         });
 
+        $('tbody').on('click','span[data-action="add-new"]',function(){
+            _idChose = $(this).data('value');
+            $('#addNewResourceModal').modal('show');
+        });
+
+
         function sendRequest(_mode){
             var _moreResourceNo = $('#add-more-resource-no').val();
             var _data = {id:_idChose,no: _moreResourceNo};
@@ -416,6 +499,15 @@ class stockpile{
             });
         }
     })
+
+
+    $('#sel-add-new').selectpicker('refresh',{
+        // selectOnTab: true,
+        // showContent: true,
+        // showIcon: true,
+        // showSubtext: true,
+        // showTick: true
+    });
 </script>
 
 </body>

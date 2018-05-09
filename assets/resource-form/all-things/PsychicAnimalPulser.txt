@@ -1,0 +1,8 @@
+<thing Class="ThingWithComps">
+						<def>PsychicAnimalPulser</def>
+						<id>PsychicAnimalPulser9670</id>
+						<map>0</map>
+						<pos>(130, 0, 160)</pos>
+						<health>100000000</health>
+						<stackCount>500</stackCount>
+					</thing>

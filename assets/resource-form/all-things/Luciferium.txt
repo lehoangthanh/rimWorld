@@ -1,0 +1,8 @@
+<thing Class="ThingWithComps">
+						<def>Luciferium</def>
+						<id>Luciferium9671</id>
+						<map>0</map>
+						<pos>(131, 0, 162)</pos>
+						<health>100000000</health>
+						<stackCount>500</stackCount>
+					</thing>

@@ -1,0 +1,9 @@
+<thing Class="ThingWithComps">
+						<def>MealSurvivalPack</def>
+						<id>MealSurvivalPack54094</id>
+						<map>0</map>
+						<pos>(16, 0, 130)</pos>
+						<health>100000</health>
+						<stackCount>10</stackCount>
+						<ingredients />
+					</thing>

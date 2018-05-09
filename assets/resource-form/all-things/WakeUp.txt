@@ -1,0 +1,9 @@
+<thing Class="ThingWithComps">
+						<def>WakeUp</def>
+						<id>WakeUp269030</id>
+						<map>0</map>
+						<pos>(84, 0, 144)</pos>
+						<health>100000000</health>
+						<stackCount>500</stackCount>
+						<forbidden>True</forbidden>
+					</thing>
