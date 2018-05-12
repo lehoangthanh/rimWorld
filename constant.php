@@ -27,6 +27,9 @@ $scriptName = $_SERVER['SCRIPT_NAME'];
 if($mode == 'save-file'&& $_SESSION['token']) {
 
     $content = $_SESSION['data-resource'];
+    if($content == null){
+        exit;
+    }
     $formFileName = $_SESSION['form-file-name'];
     file_put_contents(fileTMP, $content);
 

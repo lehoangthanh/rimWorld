@@ -116,6 +116,33 @@ $arrStockPile = $arrThingComps = array();
             die;
         }
 
+        case 'add-new-resource':{
+            $content = ($_SESSION['data-resource']) ? $_SESSION['data-resource'] : array();
+            $resourceId = $_POST['data']['resource-id'];
+            $pos = $_POST['data']['pos'];
+            $filePath = "./assets/resource-form/all-things/$resourceId.txt";
+            if(!file_exists($filePath)){
+                echo json_encode(array('result'=> "$resourceId Not Found."));
+                die;
+            }
+
+            $fopen = fopen($filePath,'r');
+            $resourceTmp = stream_get_contents($fopen);
+
+            preg_match_all('/\<pos>(.*?)<\/pos>/s', $resourceTmp, $resourceMatches);
+            $posTmp = $resourceMatches[1][0];
+            $resourceTmp = str_replace($posTmp, $pos,$resourceTmp);
+            $resourceTmp .= "\r\n\t\t\t\t</things>";
+            $resourceTmp = "\t".$resourceTmp;
+            $content = str_replace('</things>', $resourceTmp,$content,$countentReplaceCount);
+
+            $_SESSION['token'] = md5($_SESSION['form-file-name']);
+            $_SESSION['data-resource'] = $content;
+            echo json_encode(array('result'=>'success!!!'));
+            die;
+
+        }
+
     }
 
 
@@ -323,7 +350,7 @@ class stockpile{
                                         <td class="box-15">
 
                                             <?php if(!array_key_exists($width,$arrThingComps)){continue;} ?>
-                                            <?php echo "($height, 0, $width) "; ?>
+                                            <?php echo "($height,0,$width) "; ?>
                                             <?php if(array_key_exists($height,$arrThingComps[$width])) { ?>
 
                                                 <?php foreach($arrThingComps[$width][$height] as $thingComps){?>
@@ -350,7 +377,7 @@ class stockpile{
                                                 <?php }?>
                                             <?php }else{ ?>
                                                 <span class="stockpile-add-more" data-action="add-new"
-                                                  data-value='<?php echo "$width,$height" ?>'>
+                                                  data-value='<?php echo "($height,0,$width)" ?>'>
                                                         <i class="fas fa-plus-square"></i>
                                                 </span>
                                             <?php } ?>
@@ -414,15 +441,20 @@ class stockpile{
                 </button>
             </div>
             <div class="modal-body">
-                <div class="input-group">
+                <div class="row form-group">
                    <?php if($allThingsTmp){ ?>
-                        <select id="sel-add-new" class="show-menu-arrow" data-width="100px">
+                        <select id="sel-add-new" class="form-control" data-live-search="true" data-width="100%">
                             <?php foreach($allThingsTmp as $allThingTmp){ ?>
                                 <?php $sDef = str_replace('.txt','',$allThingTmp); ?>
                                 <?php $fileName = "./assets/images/32px-".strtoupper($sDef).'.png'; ?>
                                 <option
-                                        data-content="<span class='all-thing-name'><?php echo $sDef; ?></span>"
-                                        value="<?php echo $allThingTmp ?>" style="background-image:url('<?php echo $fileName; ?>'); background-repeat: no-repeat;    background-size: 25px">
+                                        data-tokens="<?php echo $allThingTmp ?>"
+                                        data-content="
+                                        <span class='all-thing-name'>
+                                            <img src='<?php echo $fileName; ?>' style='width:32px; height:32px;'/>
+                                            <?php echo $sDef; ?>
+                                        </span>"
+                                        value="<?php echo $sDef ?>" >
                                     <?php echo $allThingTmp ?>
                                 </option>
                             <?php } ?>
@@ -433,29 +465,20 @@ class stockpile{
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" id="add-more-resource-ajax" class="btn btn-primary">Save changes</button>
-                <button type="button" id="reset-resource-ajax" class="btn btn-warning">Reset Resource</button>
-                <button type="button" id="delete-resource-ajax" class="btn btn-danger">Delete Resource</button>
+                <button type="button" id="add-new-resource" class="btn btn-primary">Save changes</button>
             </div>
         </div>
     </div>
 </section>
 
-<link rel="stylesheet" href="./assets/bootstrap-select-1.12.4/css/bootstrap-select.min.css">
-
-<script src="./assets/jquery/js/jquery-3.2.1.min.js"></script>
-<!-- Latest compiled and minified JavaScript -->
-<script src="./assets/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
-
-<!-- Latest compiled and minified CSS -->
-
 
 <!-- Latest compiled and minified JavaScript -->
+<link rel="stylesheet" href="./assets/bootstrap-select-1.12.4/css/bootstrap-select.css">
 <script src="./assets/bootstrap-select-1.12.4/js/bootstrap-select.js"></script>
 
 <script>
     $(function(){
-        var _idChose = '';
+        var _idChose, _pos = '';
         $('tbody').on('click','span[data-action="add-more"]',function(){
             _idChose = $(this).data('value');
             $('#addMoreResourceModal').modal('show');
@@ -481,15 +504,24 @@ class stockpile{
 
         });
 
+        $('#add-new-resource').click(function(){
+
+            var _resourceId = $('#sel-add-new').val();
+            sendRequest('add-new-resource',_resourceId, _pos);
+        });
+
         $('tbody').on('click','span[data-action="add-new"]',function(){
-            _idChose = $(this).data('value');
+            _pos = $(this).data('value');
             $('#addNewResourceModal').modal('show');
         });
 
 
-        function sendRequest(_mode){
+        function sendRequest(_mode,_resourceId, _pos){
             var _moreResourceNo = $('#add-more-resource-no').val();
-            var _data = {id:_idChose,no: _moreResourceNo};
+            _resourceId = typeof _resourceId === undefined ? '' : _resourceId;
+            _pos = typeof _pos === undefined ? '' : _pos;
+
+            var _data = {id:_idChose,no: _moreResourceNo, "resource-id":_resourceId, pos:_pos};
             $.post('/stockpile.php',{data:_data, mode:_mode},function(response){
                 response = JSON.parse(response);
                 $('#add-more-resource-no').val('');

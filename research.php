@@ -144,10 +144,6 @@ include_once './constant.php';
 
 </div>
 
-<script src="./assets/jquery/js/jquery-3.2.1.min.js"></script>
-<!-- Latest compiled and minified JavaScript -->
-<script src="./assets/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
-
 <script>
     $(function(){
         $('#btn-up-value-to').click(function(e){

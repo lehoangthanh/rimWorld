@@ -16,12 +16,12 @@
 <!-- Optional theme -->
 <link rel="stylesheet" href="./assets/bootstrap-3.3.7-dist/css/bootstrap-theme.min.css">
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="./assets/jquery/js/jquery-3.2.1.min.js"></script>
     <!-- Latest compiled and minified JavaScript -->
     <script src="./assets/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
     <script src="./assets/AlertifyJS/build/alertify.js"></script>
 
-<script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+<script defer src="./assets/fontawesome/v5.0.6-all.js"></script>
 
 <script type="text/javascript">
     $(function(){
