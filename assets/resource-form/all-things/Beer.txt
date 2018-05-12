@@ -3,7 +3,7 @@
 						<id>Beer227466</id>
 						<map>0</map>
 						<pos>(19, 0, 124)</pos>
-						<health>100000000</health>
+						<health>1000</health>
 						<stackCount>500</stackCount>
 						<verbTracker>
 							<verbs IsNull="True" />

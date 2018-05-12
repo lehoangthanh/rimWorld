@@ -3,7 +3,7 @@
 						<id>MortarShell305029</id>
 						<map>0</map>
 						<pos>(12, 0, 134)</pos>
-						<health>100000000</health>
+						<health>1000</health>
 						<stackCount>500</stackCount>
 						<instigator>null</instigator>
 					</thing>

@@ -3,7 +3,7 @@
 						<id>MeleeWeapon_Gladius137658</id>
 						<map>0</map>
 						<pos>(25, 0, 142)</pos>
-						<health>100000000</health>
+						<health>1000</health>
 						<stackCount>500</stackCount>
 						<stuff>Plasteel</stuff>
 						<forbidden>True</forbidden>

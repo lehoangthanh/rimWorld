@@ -3,7 +3,7 @@
 						<id>MealSimple192943</id>
 						<map>0</map>
 						<pos>(20, 0, 123)</pos>
-						<health>100000000</health>
+						<health>1000</health>
 						<stackCount>500</stackCount>
 						<ingredients>
 							<li>RawBerries</li>

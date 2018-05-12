@@ -5,6 +5,8 @@
  * Date: 4/17/2018
  * Time: 1:28 PM
  */
+
+const HEALTH_MAX = 1000;
 include_once './constant.php';
 $arrStockPile = $arrThingComps = array();
 
@@ -105,7 +107,7 @@ $arrStockPile = $arrThingComps = array();
                 $xml = $thingComp['xml'];
                 $oldXml = $xml;
 
-                $xml = str_replace("<health>$health</health>", '<health>100000000</health>', $xml);
+                $xml = str_replace("<health>$health</health>", '<health>'.HEALTH_MAX.'</health>', $xml);
                 $content = str_replace($oldXml, $xml, $content, $countReplace);
 
             }
@@ -120,27 +122,20 @@ $arrStockPile = $arrThingComps = array();
             $content = ($_SESSION['data-resource']) ? $_SESSION['data-resource'] : array();
             $resourceId = $_POST['data']['resource-id'];
             $pos = $_POST['data']['pos'];
-            $filePath = "./assets/resource-form/all-things/$resourceId.txt";
-            if(!file_exists($filePath)){
-                echo json_encode(array('result'=> "$resourceId Not Found."));
-                die;
-            }
-
-            $fopen = fopen($filePath,'r');
-            $resourceTmp = stream_get_contents($fopen);
-
-            preg_match_all('/\<pos>(.*?)<\/pos>/s', $resourceTmp, $resourceMatches);
-            $posTmp = $resourceMatches[1][0];
-            $resourceTmp = str_replace($posTmp, $pos,$resourceTmp);
-            $resourceTmp .= "\r\n\t\t\t\t</things>";
-            $resourceTmp = "\t".$resourceTmp;
-            $content = str_replace('</things>', $resourceTmp,$content,$countentReplaceCount);
-
+            stockpile::addNewResource($resourceId, $pos);
             $_SESSION['token'] = md5($_SESSION['form-file-name']);
-            $_SESSION['data-resource'] = $content;
             echo json_encode(array('result'=>'success!!!'));
             die;
 
+        }
+
+        case 'add-all-resource':{
+            $content = ($_SESSION['data-resource']) ? $_SESSION['data-resource'] : array();
+            $pos = $_POST['data']['pos'];
+            stockpile::addAllResource($pos);
+            $_SESSION['token'] = md5($_SESSION['form-file-name']);
+            echo json_encode(array('result'=>'success!!!'));
+            die;
         }
 
     }
@@ -257,13 +252,13 @@ class stockpile{
                     $thingComps = array('id' => $id, 'def' => $sDef, 'pos' => $pos, 'stack-count' => $stackCount, 'health' => $health, 'xml' => $xml, 'full-xml' => $fullXml);
                     $_SESSION['full-thing-compos'] [] = $thingComps;
                 }
-                $allThingResourcePath = $_SERVER['DOCUMENT_ROOT']."/assets/resource-form/all-things/$sDef.txt";
+                $allThingResourcePath = "./assets/resource-form/all-things/$sDef.txt";
                 if (!file_exists($allThingResourcePath)) {
                     $fp = fopen($allThingResourcePath, "wb");
                     if ($fp) {
                         $xmlTmp = str_replace("<stackCount>$stackCount</stackCount>", '<stackCount>500</stackCount>', $xml);
                         if ($health > 0) {
-                            $xmlTmp = str_replace("<health>$health</health>", '<health>100000000</health>', $xmlTmp);
+                            $xmlTmp = str_replace("<health>$health</health>", '<health>'.HEALTH_MAX.'</health>', $xmlTmp);
                         }
                         fwrite($fp, $xmlTmp);
                         fclose($fp);
@@ -286,6 +281,34 @@ class stockpile{
                 $arrThingComps[$width][$height][$sDef] = $thingComps;
             }
 
+        }
+    }
+
+    static function addNewResource($resourceId, $pos){
+        $content = ($_SESSION['data-resource']) ? $_SESSION['data-resource'] : array();
+        $filePath = "./assets/resource-form/all-things/$resourceId.txt";
+        if(!file_exists($filePath)){
+            echo json_encode(array('result'=> "$resourceId Not Found."));
+            die;
+        }
+
+        $fopen = fopen($filePath,'r');
+        $resourceTmp = stream_get_contents($fopen);
+
+        preg_match_all('/\<pos>(.*?)<\/pos>/s', $resourceTmp, $resourceMatches);
+        $posTmp = $resourceMatches[1][0];
+        $resourceTmp = str_replace($posTmp, $pos,$resourceTmp);
+        $resourceTmp .= "\r\n\t\t\t\t</things>";
+        $resourceTmp = "\t".$resourceTmp;
+        $content = str_replace('</things>', $resourceTmp,$content,$countentReplaceCount);
+        $_SESSION['data-resource'] = $content;
+    }
+
+    static function addAllResource($pos){
+        $allThingsTmp = array_diff(scandir('./assets/resource-form/all-things'), array('..', '.'));
+        foreach($allThingsTmp as $resource){
+            $resourceId = str_replace('.txt','',$resource);
+            self::addNewResource($resourceId,$pos);
         }
     }
 }
@@ -348,13 +371,18 @@ class stockpile{
                                     <tr>
                                     <?php foreach($arrWidth as $height){?>
                                         <td class="box-15">
-
-                                            <?php if(!array_key_exists($width,$arrThingComps)){continue;} ?>
                                             <?php echo "($height,0,$width) "; ?>
-                                            <?php if(array_key_exists($height,$arrThingComps[$width])) { ?>
+                                            <?php if(!array_key_exists($width,$arrThingComps) || !array_key_exists($height,$arrThingComps[$width])){ ?>
+
+                                                <span class="stockpile-add-more" data-action="add-new"
+                                                      data-value='<?php echo "($height,0,$width)" ?>'>
+                                                        <i class="fas fa-plus-square"></i>
+                                                </span>
+                                            <?php continue;
+                                            } else{ ?>
 
                                                 <?php foreach($arrThingComps[$width][$height] as $thingComps){?>
-                                                    <div class="thing-comps-item">
+                                                    <div class="thing-comps-item col-md-4">
                                                         <?php $fileName = "./assets/images/32px-".strtoupper($thingComps['def']).'.png'; ?>
                                                         <?php if (file_exists($fileName)){ ?>
                                                         <img class="img-resource"
@@ -375,12 +403,7 @@ class stockpile{
                                                     </div>
 
                                                 <?php }?>
-                                            <?php }else{ ?>
-                                                <span class="stockpile-add-more" data-action="add-new"
-                                                  data-value='<?php echo "($height,0,$width)" ?>'>
-                                                        <i class="fas fa-plus-square"></i>
-                                                </span>
-                                            <?php } ?>
+                                            <?php }?>
                                         </td>
                                     <?php }?>
                                     </tr>
@@ -466,6 +489,7 @@ class stockpile{
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <button type="button" id="add-new-resource" class="btn btn-primary">Save changes</button>
+                <button type="button" id="add-all-resource" class="btn btn-primary">Add All</button>
             </div>
         </div>
     </div>
@@ -509,6 +533,11 @@ class stockpile{
             var _resourceId = $('#sel-add-new').val();
             sendRequest('add-new-resource',_resourceId, _pos);
         });
+
+        $('#add-all-resource').click(function(){
+            sendRequest('add-all-resource',0, _pos);
+        });
+
 
         $('tbody').on('click','span[data-action="add-new"]',function(){
             _pos = $(this).data('value');

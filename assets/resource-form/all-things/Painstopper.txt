@@ -3,6 +3,6 @@
 						<id>Painstopper291397</id>
 						<map>0</map>
 						<pos>(17, 0, 139)</pos>
-						<health>100000000</health>
+						<health>1000</health>
 						<stackCount>500</stackCount>
 					</thing>

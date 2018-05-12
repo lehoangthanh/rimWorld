@@ -1,8 +1,9 @@
 <thing Class="Medicine">
 						<def>GlitterworldMedicine</def>
-						<id>GlitterworldMedicine9606</id>
+						<id>GlitterworldMedicine10833</id>
 						<map>0</map>
-						<pos>(122, 0, 112)</pos>
-						<health>100000000</health>
+						<pos>(129, 0, 115)</pos>
+						<health>1000</health>
 						<stackCount>500</stackCount>
+						<forbidden>True</forbidden>
 					</thing>

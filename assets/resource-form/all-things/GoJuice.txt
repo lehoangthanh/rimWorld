@@ -3,6 +3,6 @@
 						<id>GoJuice244526</id>
 						<map>0</map>
 						<pos>(16, 0, 133)</pos>
-						<health>100000000</health>
+						<health>1000</health>
 						<stackCount>500</stackCount>
 					</thing>

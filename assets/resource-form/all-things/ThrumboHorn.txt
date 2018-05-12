@@ -3,7 +3,7 @@
 						<id>ThrumboHorn291395</id>
 						<map>0</map>
 						<pos>(15, 0, 139)</pos>
-						<health>100000000</health>
+						<health>1000</health>
 						<stackCount>500</stackCount>
 						<verbTracker>
 							<verbs IsNull="True" />

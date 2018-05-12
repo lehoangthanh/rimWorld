@@ -3,7 +3,7 @@
 						<id>Megaspider_Meat246429</id>
 						<map>0</map>
 						<pos>(20, 0, 127)</pos>
-						<health>100000000</health>
+						<health>1000</health>
 						<stackCount>500</stackCount>
 						<rotProg>468</rotProg>
 					</thing>
