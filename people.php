@@ -224,6 +224,17 @@ include_once './constant.php';
             echo json_encode(array('result'=>'success!!!'));
             die;
         }
+        case 'delete-human':{
+            $arrHuman = isset($_SESSION['data-human']) ? $_SESSION['data-human'] : array();
+            $content = isset($_SESSION['data-resource']) ? $_SESSION['data-resource'] : '';
+            $humanId = $_POST['data']['human-id'];
+            $Human = $arrHuman[$humanId];
+            $content = str_replace($Human['match'],'',$content,$countContentReplace);
+            $_SESSION['data-resource'] = $content;
+            $_SESSION['token'] = md5($_SESSION['form-file-name']);
+            echo json_encode(array('result'=>'success!!!'));
+            die;
+        }
 
 
     }
@@ -329,8 +340,8 @@ include_once './constant.php';
                                 <tr>
                                     <td>
                                         <?php echo $Human['id'] ?>
-                                        <a href="<?php echo '/people-detail.php?id='.$Human['id'] ?>&mode=read-file">
-                                            <i class="fas fa-edit"></i>
+                                        <a href="javascript:void(0);" data-action="delete-human" data-humanid="<?php echo $Human['id'] ?>">
+                                            <i class="fas fa-minus"></i>
                                         </a>
                                     </td>
                                     <td><?php echo $Human['name'] ?></td>
@@ -390,6 +401,11 @@ include_once './constant.php';
             var _id = $('#apparel-id').val();
             var _data = {apparel_id:_id};
             sendRequest(mode, _data);
+        });
+
+        $('a[data-action="delete-human"]').click(function(){
+            var _id = $(this).data('humanid');
+            sendRequest("delete-human",{"human-id":_id});
         });
 
         function sendRequest(_mode,data){
