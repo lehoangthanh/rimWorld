@@ -1,0 +1,19 @@
+<thing Class="ThingWithComps">
+						<def>MeleeWeapon_Spear</def>
+						<id>MeleeWeapon_Spear160543</id>
+						<map>0</map>
+						<pos>(114, 0, 168)</pos>
+						<health>1000</health>
+						<stackCount>500</stackCount>
+						<stuff>Steel</stuff>
+						<forbidden>True</forbidden>
+						<verbTracker>
+							<verbs>
+								<li Class="Verb_MeleeAttack">
+									<loadID>136</loadID>
+								</li>
+							</verbs>
+						</verbTracker>
+						<quality>Good</quality>
+						<taleRef IsNull="True" />
+					</thing>

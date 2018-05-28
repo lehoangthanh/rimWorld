@@ -1,0 +1,17 @@
+<thing Class="ThingWithComps">
+						<def>Gun_AssaultRifle</def>
+						<id>Gun_AssaultRifle267688</id>
+						<map>0</map>
+						<pos>(196, 0, 31)</pos>
+						<health>1000</health>
+						<stackCount>500</stackCount>
+						<forbidden>True</forbidden>
+						<verbTracker>
+							<verbs>
+								<li Class="Verb_Shoot">
+									<loadID>870</loadID>
+								</li>
+							</verbs>
+						</verbTracker>
+						<taleRef IsNull="True" />
+					</thing>

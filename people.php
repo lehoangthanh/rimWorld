@@ -406,6 +406,7 @@ include_once './constant.php';
         $('a[data-action="delete-human"]').click(function(){
             var _id = $(this).data('humanid');
             sendRequest("delete-human",{"human-id":_id});
+            $(this).parents('tr').remove();
         });
 
         function sendRequest(_mode,data){
