@@ -1,0 +1,8 @@
+<thing Class="ThingWithComps">
+						<def>PsychicInsanityLance</def>
+						<id>PsychicInsanityLance13474</id>
+						<map>0</map>
+						<pos>(165, 0, 228)</pos>
+						<health>1000</health>
+						<stackCount>500</stackCount>
+					</thing>

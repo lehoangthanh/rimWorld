@@ -1,0 +1,15 @@
+<thing Class="ThingWithComps">
+						<def>MeleeWeapon_Knife</def>
+						<id>MeleeWeapon_Knife13489</id>
+						<map>0</map>
+						<pos>(108, 0, 126)</pos>
+						<health>1000</health>
+						<stackCount>500</stackCount>
+						<stuff>Jade</stuff>
+						<forbidden>True</forbidden>
+						<verbTracker>
+							<verbs IsNull="True" />
+						</verbTracker>
+						<quality>Normal</quality>
+						<taleRef IsNull="True" />
+					</thing>

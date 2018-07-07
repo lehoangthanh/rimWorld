@@ -1,0 +1,8 @@
+<thing Class="ThingWithComps">
+						<def>Synthread</def>
+						<id>Synthread108385</id>
+						<map>0</map>
+						<pos>(141, 0, 245)</pos>
+						<health>1000</health>
+						<stackCount>500</stackCount>
+					</thing>

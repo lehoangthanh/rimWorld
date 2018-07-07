@@ -1,0 +1,10 @@
+<thing Class="ThingWithComps">
+						<def>Pemmican</def>
+						<id>Pemmican13495</id>
+						<map>0</map>
+						<pos>(107, 0, 126)</pos>
+						<health>1000</health>
+						<stackCount>500</stackCount>
+						<forbidden>True</forbidden>
+						<ingredients />
+					</thing>

@@ -1,0 +1,9 @@
+<thing Class="ThingWithComps">
+						<def>MuffaloWool</def>
+						<id>MuffaloWool153179</id>
+						<map>0</map>
+						<pos>(123, 0, 166)</pos>
+						<health>1000</health>
+						<stackCount>500</stackCount>
+						<forbidden>True</forbidden>
+					</thing>
