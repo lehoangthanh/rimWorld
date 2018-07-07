@@ -1,0 +1,18 @@
+<thing Class="ThingWithComps">
+						<def>Gun_DoomsdayRocket</def>
+						<id>Gun_DoomsdayRocket267524</id>
+						<map>0</map>
+						<pos>(107, 0, 92)</pos>
+						<health>1000</health>
+						<stackCount>500</stackCount>
+						<forbidden>True</forbidden>
+						<verbTracker>
+							<verbs>
+								<li Class="Verb_ShootOneUse">
+									<loadID>845</loadID>
+								</li>
+							</verbs>
+						</verbTracker>
+						<quality>Normal</quality>
+						<taleRef IsNull="True" />
+					</thing>

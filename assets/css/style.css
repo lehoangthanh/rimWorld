@@ -1,0 +1,82 @@
+.stockpile-name{
+    width: 50%;
+    text-align: center;
+    color: #ffffff;
+}
+
+.img-resource{
+    width: 32px;
+    height: 32px;
+    border: none;
+    vertical-align: middle;
+}
+
+.thing-comps-item{
+    display: inline-table;
+}
+
+.stockpile-add-more{
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.stockpile-add-more:hover{
+   color: #2e6da4;
+}
+
+.fa-edit:hover{
+    color: #2e6da4;
+}
+
+.apparels{
+    margin-left: 15px;
+}
+
+.apparel-heading{
+    border-bottom: 2px solid #337ab7;
+    margin-bottom: 15px;
+    padding-left: 15px;
+}
+.apparel-heading label{
+    margin-top: 15px;
+    margin-bottom: 15px;
+
+}
+
+.apparel-item{
+    margin-left: 100px;
+    margin-bottom: 50px;
+}
+
+.apparel-item-header{
+    font-size: 20px;
+    margin-bottom: 15px;
+    #margin-left: 40px;
+    color: #337ab7;
+    font-weight: bold;
+}
+.border-left{
+    border-right: 1px solid #CCCCCC;
+}
+
+.set-cloth{
+    display: inline-flex;
+    width: 50%;
+}
+
+.set-cloth a{
+    margin-right: 5px;
+}
+
+
+.reset-apparel{
+    display: inline-flex;
+    margin-left: 15px;
+}
+
+.reset-apparel select{
+    margin-left: 5px;
+}
+.all-thing-name{
+    margin-left: 10px;
+}

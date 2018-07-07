@@ -1,0 +1,18 @@
+<equipment>
+	<primary>
+		<def>Gun_AssaultRifle</def>
+		<id>Gun_AssaultRifle269110</id>
+		<pos>(95, 0, 134)</pos>
+		<health>100000</health>
+		<stackCount>1</stackCount>
+		<verbTracker>
+			<verbs>
+				<li Class="Verb_Shoot">
+					<loadID>7700552</loadID>
+				</li>
+			</verbs>
+		</verbTracker>
+		<quality>Legendary</quality>
+		<taleRef IsNull="True" />
+	</primary>
+</equipment>

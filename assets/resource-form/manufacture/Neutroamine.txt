@@ -1,0 +1,8 @@
+<thing Class="ThingWithComps">
+						<def>Neutroamine</def>
+						<id>Neutroamine244505</id>
+						<map>0</map>
+						<pos>(13, 0, 133)</pos>
+						<health>1000000000</health>
+						<stackCount>400</stackCount>
+					</thing>

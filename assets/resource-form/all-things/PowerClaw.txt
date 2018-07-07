@@ -1,0 +1,8 @@
+<thing Class="ThingWithComps">
+						<def>PowerClaw</def>
+						<id>PowerClaw291715</id>
+						<map>0</map>
+						<pos>(13, 0, 139)</pos>
+						<health>1000</health>
+						<stackCount>500</stackCount>
+					</thing>

@@ -1,0 +1,12 @@
+<thing Class="ThingWithComps">
+						<def>WoodLog</def>
+						<id>WoodLog9695</id>
+						<map>0</map>
+						<pos>(139, 0, 126)</pos>
+						<health>1000</health>
+						<stackCount>500</stackCount>
+						<forbidden>True</forbidden>
+						<verbTracker>
+							<verbs IsNull="True" />
+						</verbTracker>
+					</thing>

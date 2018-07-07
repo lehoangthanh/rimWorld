@@ -1,0 +1,20 @@
+<thing Class="ThingWithComps">
+						<def>MeleeWeapon_Gladius</def>
+						<id>MeleeWeapon_Gladius137658</id>
+						<map>0</map>
+						<pos>(25, 0, 142)</pos>
+						<health>1000</health>
+						<stackCount>500</stackCount>
+						<stuff>Plasteel</stuff>
+						<forbidden>True</forbidden>
+						<verbTracker>
+							<verbs>
+								<li Class="Verb_MeleeAttack">
+									<loadID>3568151</loadID>
+									<currentTarget>Thing_Human101923</currentTarget>
+								</li>
+							</verbs>
+						</verbTracker>
+						<quality>Poor</quality>
+						<taleRef IsNull="True" />
+					</thing>

@@ -1,0 +1,17 @@
+<thing Class="ThingWithComps">
+						<def>Bow_Short</def>
+						<id>Bow_Short160738</id>
+						<map>0</map>
+						<pos>(119, 0, 168)</pos>
+						<health>1000</health>
+						<stackCount>500</stackCount>
+						<forbidden>True</forbidden>
+						<verbTracker>
+							<verbs>
+								<li Class="Verb_Shoot">
+									<loadID>195</loadID>
+								</li>
+							</verbs>
+						</verbTracker>
+						<quality>Shoddy</quality>
+					</thing>

@@ -1,0 +1,9 @@
+<thing Class="ThingWithComps">
+						<def>Iguana_Meat</def>
+						<id>Iguana_Meat246429</id>
+						<map>0</map>
+						<pos>(21, 0, 125)</pos>
+						<health>1000</health>
+						<stackCount>500</stackCount>
+						<rotProg>470.2667</rotProg>
+					</thing>

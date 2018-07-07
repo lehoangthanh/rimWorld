@@ -1,0 +1,37 @@
+<apparel>
+	<wornApparel>
+		<li>
+			<def>Apparel_BasicShirt</def>
+			<id>Apparel_BasicShirt310</id>
+			<health>100000</health>
+			<stackCount>1</stackCount>
+			<stuff>Synthread</stuff>
+			<quality>Normal</quality>
+		</li>
+		<li>
+			<def>Apparel_Pants</def>
+			<id>Apparel_Pants311</id>
+			<health>100000</health>
+			<stackCount>1</stackCount>
+			<stuff>Synthread</stuff>
+			<quality>Normal</quality>
+		</li>
+		<li>
+			<def>Apparel_Jacket</def>
+			<id>Apparel_Jacket309</id>
+			<health>100000</health>
+			<stackCount>1</stackCount>
+			<stuff>Synthread</stuff>
+			<quality>Normal</quality>
+		</li>
+		<li>
+			<def>Apparel_Tuque</def>
+			<id>Apparel_Tuque71865</id>
+			<pos>(20, 0, 137)</pos>
+			<health>100000</health>
+			<stackCount>1</stackCount>
+			<stuff>Hyperweave</stuff>
+		</li>
+	</wornApparel>
+	<lastApparelWearoutTick>240500</lastApparelWearoutTick>
+</apparel>

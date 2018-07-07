@@ -1,0 +1,9 @@
+<thing Class="ThingWithComps">
+						<def>RawRice</def>
+						<id>RawRice192313</id>
+						<map>0</map>
+						<pos>(18, 0, 127)</pos>
+						<health>1000</health>
+						<stackCount>500</stackCount>
+						<rotProg>1768.667</rotProg>
+					</thing>

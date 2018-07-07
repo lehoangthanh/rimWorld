@@ -1,0 +1,10 @@
+<thing Class="ThingWithComps">
+						<def>MealNutrientPaste</def>
+						<id>MealNutrientPaste246433</id>
+						<map>0</map>
+						<pos>(21, 0, 126)</pos>
+						<health>1000</health>
+						<stackCount>500</stackCount>
+						<ingredients />
+						<rotProg>468</rotProg>
+					</thing>

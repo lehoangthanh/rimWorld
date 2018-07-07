@@ -1,0 +1,16 @@
+<thing Class="ThingWithComps">
+						<def>Weapon_GrenadeMolotov</def>
+						<id>Weapon_GrenadeMolotov269028</id>
+						<map>0</map>
+						<pos>(84, 0, 142)</pos>
+						<health>1000</health>
+						<stackCount>500</stackCount>
+						<forbidden>True</forbidden>
+						<verbTracker>
+							<verbs>
+								<li Class="Verb_LaunchProjectile">
+									<loadID>7700540</loadID>
+								</li>
+							</verbs>
+						</verbTracker>
+					</thing>

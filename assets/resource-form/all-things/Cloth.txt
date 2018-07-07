@@ -1,0 +1,8 @@
+<thing Class="ThingWithComps">
+						<def>Cloth</def>
+						<id>Cloth238824</id>
+						<map>0</map>
+						<pos>(16, 0, 134)</pos>
+						<health>1000</health>
+						<stackCount>500</stackCount>
+					</thing>
