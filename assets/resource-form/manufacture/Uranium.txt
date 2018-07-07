@@ -1,7 +1,0 @@
-<thing Class="ThingWithComps">
-						<def>Uranium</def>
-						<id>Uranium309871</id>
-						<map>0</map>
-						<pos>(17, 0, 137)</pos>
-						<stackCount>6</stackCount>
-					</thing>

@@ -1,8 +1,0 @@
-<thing Class="ThingWithComps">
-						<def>SmokeleafJoint</def>
-						<id>SmokeleafJoint303235</id>
-						<map>0</map>
-						<pos>(18, 0, 126)</pos>
-						<health>1000</health>
-						<stackCount>500</stackCount>
-					</thing>

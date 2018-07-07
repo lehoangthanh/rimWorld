@@ -1,8 +1,0 @@
-<thing Class="ThingWithComps">
-						<def>AlpacaWool</def>
-						<id>AlpacaWool295847</id>
-						<map>0</map>
-						<pos>(17, 0, 133)</pos>
-						<health>99999993</health>
-						<stackCount>100</stackCount>
-					</thing>

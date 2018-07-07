@@ -1,9 +1,0 @@
-<thing Class="ThingWithComps">
-						<def>Wort</def>
-						<id>Wort203452</id>
-						<map>0</map>
-						<pos>(23, 0, 123)</pos>
-						<health>1000</health>
-						<stackCount>500</stackCount>
-						<rotProg>26885</rotProg>
-					</thing>

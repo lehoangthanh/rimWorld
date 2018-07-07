@@ -1,8 +1,0 @@
-<thing Class="ThingWithComps">
-						<def>Component</def>
-						<id>Component9693</id>
-						<map>0</map>
-						<pos>(11, 0, 133)</pos>
-						<health>1000</health>
-						<stackCount>500</stackCount>
-					</thing>

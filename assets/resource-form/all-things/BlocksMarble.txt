@@ -1,7 +1,0 @@
-<thing Class="ThingWithComps">
-						<def>BlocksMarble</def>
-						<id>BlocksMarble133076</id>
-						<map>0</map>
-						<pos>(13, 0, 137)</pos>
-						<stackCount>500</stackCount>
-					</thing>

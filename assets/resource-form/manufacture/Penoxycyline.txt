@@ -1,8 +1,0 @@
-<thing Class="ThingWithComps">
-						<def>Penoxycyline</def>
-						<id>Penoxycyline250129</id>
-						<map>0</map>
-						<pos>(14, 0, 133)</pos>
-						<health>1000</health>
-						<stackCount>400</stackCount>
-					</thing>

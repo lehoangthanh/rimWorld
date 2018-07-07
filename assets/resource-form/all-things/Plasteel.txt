@@ -1,7 +1,0 @@
-<thing Class="ThingWithComps">
-						<def>Plasteel</def>
-						<id>Plasteel187901</id>
-						<map>0</map>
-						<pos>(14, 0, 136)</pos>
-						<stackCount>500</stackCount>
-					</thing>

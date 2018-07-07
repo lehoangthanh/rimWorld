@@ -1,9 +1,0 @@
-<thing Class="ThingWithComps">
-						<def>RawBerries</def>
-						<id>RawBerries98222</id>
-						<map>0</map>
-						<pos>(24, 0, 124)</pos>
-						<health>1000</health>
-						<stackCount>500</stackCount>
-						<rotProg>199715</rotProg>
-					</thing>

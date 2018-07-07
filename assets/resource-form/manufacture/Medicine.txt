@@ -1,8 +1,0 @@
-<thing Class="Medicine">
-						<def>Medicine</def>
-						<id>Medicine192325</id>
-						<map>0</map>
-						<pos>(10, 0, 133)</pos>
-						<health>1000000000</health>
-						<stackCount>16</stackCount>
-					</thing>

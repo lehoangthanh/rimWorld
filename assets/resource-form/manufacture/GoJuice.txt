@@ -1,8 +1,0 @@
-<thing Class="ThingWithComps">
-						<def>GoJuice</def>
-						<id>GoJuice244526</id>
-						<map>0</map>
-						<pos>(16, 0, 133)</pos>
-						<health>99999995</health>
-						<stackCount>400</stackCount>
-					</thing>

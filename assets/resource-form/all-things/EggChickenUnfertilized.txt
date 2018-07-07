@@ -1,9 +1,0 @@
-<thing Class="ThingWithComps">
-						<def>EggChickenUnfertilized</def>
-						<id>EggChickenUnfertilized244314</id>
-						<map>0</map>
-						<pos>(22, 0, 125)</pos>
-						<health>1000</health>
-						<stackCount>500</stackCount>
-						<rotProg>9292</rotProg>
-					</thing>
