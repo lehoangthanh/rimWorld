@@ -103,7 +103,7 @@ include_once './constant.php';
 
                 }
 
-                $_SESSION['data-human'][$key] = $humanMatch;
+                $_SESSION['data-human'][$key]['match'] = $humanMatch;
                 $content = str_replace($oldMatch,$humanMatch,$content);
             }
             $_SESSION['data-resource'] = $content;

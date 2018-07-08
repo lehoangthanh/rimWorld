@@ -138,6 +138,25 @@ $arrStockPile = $arrThingComps = array();
             die;
         }
 
+        case 'delete-stockpile':{
+            $content = ($_SESSION['data-resource']) ? $_SESSION['data-resource'] : array();
+            $arrThingComps = ($_SESSION['data-thing-comps']) ? $_SESSION['data-thing-comps'] : array();
+            $arrData = $_POST['data'];
+            foreach($arrData as $data){
+                $data = explode(',', $data);
+                $width = $data[0];
+                $height = $data[1];
+                $thingComps = $arrThingComps[$width][$height];
+                if($thingComps){
+                    $thingComps = array_pop(array_reverse($thingComps));
+                    stockpile::resetResourceWithThingCompos($thingComps,true);
+                }
+            }
+            $_SESSION['token'] = md5($_SESSION['form-file-name']);
+            echo json_encode(array('result'=>'Delete Stockpile Success!!!'));
+            die;
+        }
+
     }
 
 
@@ -191,15 +210,19 @@ class stockpile{
      * @return void
      */
     public static function resetResource($data, $delResource = false){
-        $content = $_SESSION['data-resource'];
         $id = $data['id'];
         list($width,$height,$def,$id) = explode(',',$id);
         $arrThingComps = ($_SESSION['data-thing-comps']) ? $_SESSION['data-thing-comps'] : array();
-
         $thingComps = $arrThingComps[$width][$height][$def];
+        self::resetResourceWithThingCompos($thingComps, $delResource);
+        self::addMoreResource($data);
+    }
+
+    public static function resetResourceWithThingCompos($thingComps, $delResource){
+        $content = $_SESSION['data-resource'];
+
         $oldXml = $thingComps['xml'];
         $fullXml = $thingComps['full-xml'];
-
 
         preg_match_all('/\<stackCount>(.*?)<\/stackCount>/s', $oldXml, $stackCountMatches);
         $stackCount = $stackCountMatches[1][0];
@@ -216,7 +239,7 @@ class stockpile{
 
         }
         $_SESSION['data-resource'] = $content;
-        stockPile::addMoreResource($data);
+
     }
 
     /**
@@ -362,15 +385,18 @@ class stockpile{
 
                     </div>
                     <?php if($arrStockPile){ ?>
-                        <?php foreach($arrStockPile as $stockpile){?>
+                        <?php foreach($arrStockPile as $keyStockpile=>$stockpile){?>
                         <p class="stockpile-name" style="background-color: <?php echo $stockpile['css-color']?>"> <?php echo $stockpile['label']. ' - '.$stockpile['color'] ?></p>
+                            <a href="javascript:void(0);" data-action="delete-stockpile" data-value="<?php echo "$keyStockpile" ?>" class="btn btn-danger">
+                                Delete Stock Pile
+                            </a>
                         <table class="table table-bordered table-responsive table-hover table-striped">
-                            <tbody>
+                            <tbody id="stockpile-<?php echo $keyStockpile ?>">
 
                                 <?php foreach($stockpile['data'] as $width=>$arrWidth){?>
                                     <tr>
                                     <?php foreach($arrWidth as $height){?>
-                                        <td class="box-15">
+                                        <td class="box-15" data-value="<?php echo "$width,$height" ?>">
                                             <?php echo "($height,0,$width) "; ?>
                                             <?php if(!array_key_exists($width,$arrThingComps) || !array_key_exists($height,$arrThingComps[$width])){ ?>
 
@@ -561,7 +587,25 @@ class stockpile{
         }
     })
 
+    $('a[data-action="delete-stockpile"]').click(function(){
+        var _this = $(this);
+        var _stockpileId = _this.data('value');
+        var _table = $('#stockpile-'+_stockpileId);
+        var _data = [];
+        _table.find('td').each(function(){
+            var _td = $(this);
+            _data.push(_td.data('value'));
+        })
 
+        $.ajax({
+            url: '/stockpile.php',
+            type: 'post',
+            dataType: 'json',
+            data: {data: _data, mode: 'delete-stockpile'}
+        }).done(function(response){
+            alertify.success(response.result);
+        })
+    })
     $('#sel-add-new').selectpicker('refresh',{
         // selectOnTab: true,
         // showContent: true,
