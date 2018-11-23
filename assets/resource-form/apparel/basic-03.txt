@@ -1,0 +1,34 @@
+<apparel>
+							<wornApparel>
+								<li>
+									<def>Apparel_VestPlate</def>
+									<id>Apparel_VestPlate164860</id>
+									<health>999</health>
+									<stackCount>1</stackCount>
+									<color>RGBA(0.497, 0.335, 0.447, 1.000)</color>
+									<colorActive>True</colorActive>
+									<quality>Superior</quality>
+								</li>
+								<li>
+									<def>Apparel_Parka</def>
+									<id>Apparel_Parka164861</id>
+									<health>999</health>
+									<stackCount>1</stackCount>
+									<stuff>Cloth</stuff>
+									<color>RGBA(0.330, 0.330, 0.330, 1.000)</color>
+									<colorActive>True</colorActive>
+									<quality>Superior</quality>
+								</li>
+								<li>
+									<def>Apparel_Tuque</def>
+									<id>Apparel_Tuque164862</id>
+									<health>100</health>
+									<stackCount>1</stackCount>
+									<stuff>Cloth</stuff>
+									<color>RGBA(0.330, 0.330, 0.330, 1.000)</color>
+									<colorActive>True</colorActive>
+									<quality>Superior</quality>
+								</li>
+							</wornApparel>
+							<lastApparelWearoutTick>264250</lastApparelWearoutTick>
+						</apparel>

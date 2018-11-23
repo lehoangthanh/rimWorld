@@ -1,0 +1,20 @@
+<thing Class="ThingWithComps">
+						<def>MeleeWeapon_LongSword</def>
+						<id>MeleeWeapon_LongSword1021777</id>
+						<map>0</map>
+						<pos>(77, 0, 119)</pos>
+						<health>1000</health>
+						<stackCount>500</stackCount>
+						<stuff>Steel</stuff>
+						<forbidden>True</forbidden>
+						<verbTracker>
+							<verbs>
+								<li Class="Verb_MeleeAttack">
+									<loadID>204</loadID>
+									<currentTarget>Thing_Human164859</currentTarget>
+								</li>
+							</verbs>
+						</verbTracker>
+						<quality>Normal</quality>
+						<taleRef IsNull="True" />
+					</thing>

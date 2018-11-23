@@ -1,0 +1,8 @@
+<thing Class="ThingWithComps">
+						<def>AIPersonaCore</def>
+						<id>AIPersonaCore1492403</id>
+						<map>0</map>
+						<pos>(170, 0, 18)</pos>
+						<health>1000</health>
+						<stackCount>500</stackCount>
+					</thing>
